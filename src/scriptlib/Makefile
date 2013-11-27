@@ -7,7 +7,6 @@ INCLUDES := -I$(INCL_HOME)
 
 main:  $(OBJECTS)
 	
-
 %.o: %.cpp $(HEADERS)
 	$(CC) $(CFLAGS) $< -o $(OBJ_HOME)/scriptlib/$@ $(INCLUDES)
 
