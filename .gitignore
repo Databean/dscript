@@ -1,0 +1,6 @@
+dscript
+*.o
+src/lex.yy.c
+src/y.output
+src/y.tab.c
+src/y.tab.h
