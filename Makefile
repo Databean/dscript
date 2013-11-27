@@ -1,5 +1,6 @@
 CC := g++ -std=gnu++11 -g 
-export OBJ_HOME = $(realpath obj)
+export OBJ_HOME := $(realpath obj)
+export INCL_HOME := $(realpath include)
 EXECUTABLE := dscript
 
 .PHONY: $(EXECUTABLE)
