@@ -40,6 +40,11 @@ namespace dscript {
 		return new SimpleType(typeName);
 	}
 	
+	template<> std::string CPPType<int>::name = "Int";
+	template<> std::string CPPType<std::string>::name = "String";
+	template<> std::string CPPType<float>::name = "Real";
+	template<> std::string CPPType<bool>::name = "Bool";
+	
 	FunctionType::FunctionType(Type* returnType,std::vector<Type*>* paramTypes) {
 		this->returnType = returnType;
 		this->paramTypes = paramTypes;

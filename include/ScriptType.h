@@ -25,6 +25,30 @@ namespace dscript {
 	private:
 		std::string typeName;
 	};
+	template<typename T>
+	class CPPType : public Type {
+	private:
+		static std::string name;
+	public:
+		CPPType() {}
+		virtual ~CPPType() {}
+		virtual std::string getTypeName() {
+			return name;
+		}
+		virtual std::string getName() {
+			return name;
+		}
+		virtual bool equals(Type* other) {
+			return dynamic_cast<CPPType<T> >(other) != NULL;
+		}
+		virtual CPPType<T>* clone() {
+			return new CPPType<T>();
+		}
+		virtual bool verify() {
+			return name != "";
+		}
+	};
+		
 	class FunctionType : public Type {
 	public:
 		FunctionType(Type* returnType,std::vector<Type*>* paramTypes);
