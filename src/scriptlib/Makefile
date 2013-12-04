@@ -8,7 +8,7 @@ INCLUDES := -I$(INCL_HOME)
 main:  $(OBJECTS)
 	
 $(OBJ_HOME)/scriptlib/%.o: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) $< -o $(OBJ_HOME)/scriptlib/$@ $(INCLUDES)
+	$(CC) $(CFLAGS) $< -o $@ $(INCLUDES)
 
 .PHONY: clean
 clean:

@@ -16,10 +16,10 @@ y.tab.c: parser.y
 	bison -dvty parser.y
 
 $(OBJ_HOME)/%.o: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) $< -o $(OBJ_HOME)/$@ $(INCLUDES)
+	$(CC) $(CFLAGS) $< -o $@ $(INCLUDES)
 
 $(OBJ_HOME)/%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) $< -o $(OBJ_HOME)/$@ $(INCLUDES)
+	$(CC) $(CFLAGS) $< -o $@ $(INCLUDES)
 
 .PHONY: clean
 clean:
