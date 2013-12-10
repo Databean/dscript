@@ -20,7 +20,7 @@ namespace dscript {
 		virtual Type* getType();
 	private:
 		std::string s;
-		Type* type;
+		CPPType<std::string> type;
 	};
 	
 	class IntLiteralExpr : public Expression {
@@ -32,7 +32,7 @@ namespace dscript {
 		virtual Type* getType();
 	private:
 		int i;
-		Type* type;
+		CPPType<int> type;
 	};
 	
 	class RealLiteralExpr : public Expression {
@@ -44,7 +44,7 @@ namespace dscript {
 		virtual Type* getType();
 	private:
 		float d;
-		Type* type;
+		CPPType<float> type;
 	};
 	
 	class BoolLiteralExpr : public Expression {
@@ -56,7 +56,7 @@ namespace dscript {
 		virtual Type* getType();
 	private:
 		bool b;
-		Type* type;
+		CPPType<bool> type;
 	};
 	
 	class FunctionCall : public Expression {

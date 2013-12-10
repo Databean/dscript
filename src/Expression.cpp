@@ -67,10 +67,9 @@ namespace dscript {
 	StringLiteralExpr::StringLiteralExpr(std::string* s) {
 		this->s = *s;
 		delete s;
-		type = new CPPType<std::string>;
 	}
 	StringLiteralExpr::~StringLiteralExpr() {
-		delete type;
+		
 	}
 	ScriptObject StringLiteralExpr::evaluate(Scope* scope) {
 		return ScriptObject(ScriptString(s));
@@ -79,15 +78,14 @@ namespace dscript {
 		return true;
 	}
 	Type* StringLiteralExpr::getType() {
-		return type;
+		return &type;
 	}
 	
 	IntLiteralExpr::IntLiteralExpr(int i) {
 		this->i = i;
-		type = new CPPType<int>();
 	}
 	IntLiteralExpr::~IntLiteralExpr() {
-		delete type;
+		
 	}
 	ScriptObject IntLiteralExpr::evaluate(Scope* scope) {
 		return ScriptObject(ScriptInt(i));
@@ -96,15 +94,14 @@ namespace dscript {
 		return true;
 	}
 	Type* IntLiteralExpr::getType() {
-		return type;
+		return &type;
 	}
 	
 	RealLiteralExpr::RealLiteralExpr(float d) {
 		this->d = d;
-		type = new CPPType<float>;
 	}
 	RealLiteralExpr::~RealLiteralExpr() {
-		delete type;
+		
 	}
 	ScriptObject RealLiteralExpr::evaluate(Scope* scope) {
 		return ScriptObject(ScriptReal(d));
@@ -113,15 +110,14 @@ namespace dscript {
 		return true;
 	}
 	Type* RealLiteralExpr::getType() {
-		return type;
+		return &type;
 	}
 	
 	BoolLiteralExpr::BoolLiteralExpr(bool b) {
 		this->b = b;
-		type = new CPPType<bool>;
 	}
 	BoolLiteralExpr::~BoolLiteralExpr() {
-		delete type;
+		
 	}
 	ScriptObject BoolLiteralExpr::evaluate(Scope* scope) {
 		return ScriptObject(ScriptBool(b));
@@ -130,7 +126,7 @@ namespace dscript {
 		return true;
 	}
 	Type* BoolLiteralExpr::getType() {
-		return type;
+		return &type;
 	}
 	
 	ReferenceExpr::ReferenceExpr(VarExpr* ve) {
