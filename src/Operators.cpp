@@ -61,12 +61,9 @@ namespace dscript {
 			return false;
 		}
 		Type* t = set->getType();
-		SimpleType* st = dynamic_cast<SimpleType*>(t);
-		if(!st) {
-			std::cout << "unary set expr type is not simple" << std::endl;
-			return false;
-		}
-		if(st->getTypeName()!="Int" && st->getTypeName()!="Real") {
+		CPPType<int>* intType = dynamic_cast<CPPType<int>*>(t);
+		CPPType<float>* realType = dynamic_cast<CPPType<float>*>(t);
+		if(!intType && !realType) {
 			std::cout << "unary set expr type is not Int or Real" << std::endl;
 			return false;
 		}

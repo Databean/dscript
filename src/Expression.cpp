@@ -53,7 +53,7 @@ namespace dscript {
 		}
 		FunctionPrototype fp(func,paramTypes);
 		if(!(calling = getFunction(fp))) {
-			std::cout << "could not resolve function" << std::endl;
+			std::cout << "could not resolve function \"" << func << "\"" << std::endl;
 			delete paramTypes;
 			return false;
 		}
@@ -67,7 +67,7 @@ namespace dscript {
 	StringLiteralExpr::StringLiteralExpr(std::string* s) {
 		this->s = *s;
 		delete s;
-		type = new SimpleType("String");
+		type = new CPPType<std::string>;
 	}
 	StringLiteralExpr::~StringLiteralExpr() {
 		delete type;
@@ -84,7 +84,7 @@ namespace dscript {
 	
 	IntLiteralExpr::IntLiteralExpr(int i) {
 		this->i = i;
-		type = new SimpleType("Int");
+		type = new CPPType<int>();
 	}
 	IntLiteralExpr::~IntLiteralExpr() {
 		delete type;
@@ -101,7 +101,7 @@ namespace dscript {
 	
 	RealLiteralExpr::RealLiteralExpr(float d) {
 		this->d = d;
-		type = new SimpleType("Real");
+		type = new CPPType<float>;
 	}
 	RealLiteralExpr::~RealLiteralExpr() {
 		delete type;
@@ -118,7 +118,7 @@ namespace dscript {
 	
 	BoolLiteralExpr::BoolLiteralExpr(bool b) {
 		this->b = b;
-		type = new SimpleType("Bool");
+		type = new CPPType<bool>;
 	}
 	BoolLiteralExpr::~BoolLiteralExpr() {
 		delete type;

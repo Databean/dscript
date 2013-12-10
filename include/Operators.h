@@ -2,82 +2,16 @@
 #ifndef OPERATORS_H
 #define OPERATORS_H
 
-#define makeBinaryOperatorClass(name,leftType,op,rightType,returnType) \
-class Operator_##leftType##_##name##_##rightType : public BinaryOperatorFunc { \
-public: \
-	Operator_##leftType##_##name##_##rightType () {	\
-		type = new SimpleType( #returnType ); \
-	} \
-	virtual ~Operator_##leftType##_##name##_##rightType () { \
-		delete type;\
-	} \
-	virtual ScriptObject evaluate(ScriptObject left,ScriptObject right) { \
-		return ScriptObject(Script##returnType ( \
-			(reinterpret_cast< Script##leftType *>(left.getWrapped()))->getValue() op  \
-			(reinterpret_cast< Script##rightType *>(right.getWrapped()))->getValue())); \
-	} \
-	virtual Type* getType() { \
-		return type; \
-	} \
-private: \
-	Type* type; \
-}; \
-run(getDScriptEngine()->addBinaryOperator( \
-BinaryOperatorType(new SimpleType( #leftType ), #op ,new SimpleType( #rightType ) )\
-,new Operator_##leftType##_##name##_##rightType ());,Operator_##leftType##_##name##_##rightType)
+#define scriptBinaryOperator(name,leftType,rightType,fn) \
+run(auto f = fn;\
+	getDScriptEngine()->addBinaryOperator( \
+BinaryOperatorType(new CPPType<leftType>(), name, new CPPType<rightType>()), \
+new BinaryOperatorCPPFunc<decltype(f(leftType(),rightType())),leftType,rightType>(f));)
 
-#define BEGIN_MANUAL_BINARY_OPERATOR(name,returnType) \
-class Operator_##name : public BinaryOperatorFunc { \
-public: \
-	Operator_##name () { \
-		type = returnType; \
-	} \
-	virtual ~Operator_##name () { \
-		delete type; \
-	} \
-	virtual Type* getType() { \
-		return type; \
-	} \
-	virtual ScriptObject evaluate(ScriptObject operatorParamLeft,ScriptObject operatorParamRight) \
-	
-
-#define BINARY_OPERATOR_PARAM_LEFT(scriptType) \
-reinterpret_cast< Script##scriptType * >(operatorParamLeft.getWrapped())->getValue();
-
-#define BINARY_OPERATOR_PARAM_RIGHT(scriptType) \
-reinterpret_cast< Script##scriptType * >(operatorParamRight.getWrapped())->getValue();
-
-#define END_MANUAL_BINARY_OPERATOR(name,returnType,leftType,op,rightType) \
-private: \
-	Type* type; \
-}; \
-run(getDScriptEngine()->addBinaryOperator( \
-BinaryOperatorType( leftType , op ,rightType )\
-,new Operator_##name ());,Operator_##name##_instanciate)
-
-#define makeUnaryOperatorClass(name,op,rightType,returnType) \
-class Operator_##name##_##rightType : public UnaryOperatorFunc { \
-public: \
-	Operator_##name##_##rightType () {	\
-		type = new SimpleType( #returnType ); \
-	} \
-	virtual ~Operator_##name##_##rightType () { \
-		delete type;\
-	} \
-	\
-	virtual ScriptObject evaluate(ScriptObject right) { \
-		return ScriptObject(Script##returnType ( op  \
-			(reinterpret_cast< Script##rightType *>(right.getWrapped()))->getValue())); \
-	} \
-	virtual Type* getType() { \
-		return type; \
-	} \
-	private: \
-		Type* type; \
-}; \
-run(getDScriptEngine()->addUnaryOperator( \
-UnaryOperatorType( #op ,new SimpleType( #rightType ) )\
-,new Operator_##name##_##rightType ());,Operator_##leftType##_##name##_##rightType)
+#define scriptUnaryOperator(name,type,fn) \
+run(auto f = fn; \
+	getDScriptEngine()->addUnaryOperator( \
+UnaryOperatorType(name, new CPPType<type>), new UnaryOperatorCPPFunc<decltype(f(type())),type>(f));)
 
 #include "ScriptType.h"
 #include "ScriptEngine.h"
@@ -138,6 +72,32 @@ namespace dscript {
 		virtual Type* getType()=0;
 	};
 	
+	template<typename Ret, typename LeftSide, typename RightSide>
+	class BinaryOperatorCPPFunc : public BinaryOperatorFunc {
+	private:
+		typedef Ret(*Fn)(LeftSide,RightSide);
+		Fn fn;
+		CPPType<Ret> type;
+	public:
+		BinaryOperatorCPPFunc(Fn fn) : fn(fn) {}
+		~BinaryOperatorCPPFunc() {}
+		
+		virtual ScriptObject evaluate(ScriptObject left, ScriptObject right) {
+			CPPObjectWrapper<LeftSide>* lhs = dynamic_cast<CPPObjectWrapper<LeftSide>*>(left.getWrapped());
+			if(!lhs) {
+				throw "left side of operator type incorrect";
+			}
+			CPPObjectWrapper<RightSide>* rhs = dynamic_cast<CPPObjectWrapper<RightSide>*>(right.getWrapped());
+			if(!rhs) {
+				throw "right side of operator type incorrect";
+			}
+			return ScriptObject(CPPObjectWrapper<Ret>(fn(lhs->getValue(),rhs->getValue())));
+		}
+		virtual Type* getType() {
+			return &type;
+		}
+	};
+	
 	class BinaryOperator : public Expression {
 	public:
 		BinaryOperator(Expression* left,std::string op,Expression* right);
@@ -175,6 +135,29 @@ namespace dscript {
 		virtual ScriptObject evaluate(ScriptObject right)=0;
 		virtual Type* getType()=0;
 	};
+	
+	template<typename Ret, typename ParamType>
+	class UnaryOperatorCPPFunc : public UnaryOperatorFunc {
+	private:
+		typedef Ret(*Fn)(ParamType);
+		Fn fn;
+		CPPType<Ret> type;
+	public:
+		UnaryOperatorCPPFunc(Fn fn) : fn(fn) {}
+		~UnaryOperatorCPPFunc() {}
+		
+		virtual ScriptObject evaluate(ScriptObject param) {
+			CPPObjectWrapper<ParamType>* par = dynamic_cast<CPPObjectWrapper<ParamType>*>(param.getWrapped());
+			if(!par) {
+				throw "right side of operator type incorrect";
+			}
+			return ScriptObject(CPPObjectWrapper<Ret>(fn(par->getValue())));
+		}
+		virtual Type* getType() {
+			return &type;
+		}
+	};
+		
 	
 	class UnaryOperator : public Expression {
 	public:

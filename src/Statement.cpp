@@ -69,13 +69,9 @@ namespace dscript {
 			return false;
 		}
 		Type* t = condition->getType();
-		SimpleType* st = dynamic_cast<SimpleType*>(t);
+		CPPType<bool>* st = dynamic_cast<CPPType<bool>*>(t);
 		if(!st) {
-			std::cout << "while condition type is not simple" << std::endl;
-			return false;
-		}
-		if(st->getTypeName()!="Bool") {
-			std::cout << "while condition type is not Bool" << std::endl;
+			std::cout << "while condition type is not bool" << std::endl;
 			return false;
 		}
 		return loop->verify();
@@ -122,12 +118,8 @@ namespace dscript {
 			return false;
 		}
 		Type* t = condition->getType();
-		SimpleType* st = dynamic_cast<SimpleType*>(t);
+		CPPType<bool>* st = dynamic_cast<CPPType<bool>*>(t);
 		if(!st) {
-			std::cout << "conditional type is not simple type" << std::endl;
-			return false;
-		}
-		if(st->getName()!="Bool") {
 			std::cout << "conditional type is not Bool" << std::endl;
 			return false;
 		}

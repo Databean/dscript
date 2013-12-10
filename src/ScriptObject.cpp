@@ -11,8 +11,8 @@ namespace dscript {
 	//SCRIPT_TYPE_IMPL(double,Real)
 	//SCRIPT_TYPE_IMPL(bool,Bool)
 	
-	template<> Type* ScriptInt::type = new SimpleType("Int");
-	template<> Type* ScriptString::type = new SimpleType("String");
-	template<> Type* ScriptReal::type = new SimpleType("Real");
-	template<> Type* ScriptBool::type = new SimpleType("Bool");
+	template<> Type* ScriptInt::type = new CPPType<int>;
+	template<> Type* ScriptString::type = new CPPType<std::string>;
+	template<> Type* ScriptReal::type = new CPPType<float>;
+	template<> Type* ScriptBool::type = new CPPType<bool>;
 }

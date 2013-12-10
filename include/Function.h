@@ -1,6 +1,8 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include <utility>
+
 #define SCRIPT_BEGIN_FUNC(funcID, retType, argc, ...) \
 class ScriptFunc_##funcID : public dscript::Function { \
 private: \
@@ -27,7 +29,7 @@ public: \
 
 #define SCRIPT_END_FUNC(funcID,scriptName) \
 }; \
-run(Function* sc = new ScriptFunc_##funcID () ; getDScriptEngine()->addFunction(FunctionPrototype( scriptName , sc->getType()->getParamTypes()) , sc) ; , ScriptAddFunc_##funcID) 
+run(Function* sc = new ScriptFunc_##funcID () ; getDScriptEngine()->addFunction(FunctionPrototype( scriptName , sc->getType()->getParamTypes()) , sc);) 
 
 #define RUN_FIRST(name,code) \
 class AAA##name { \
@@ -35,6 +37,12 @@ class AAA##name { \
 	~AAA##name () { } \
 }; \
 AAA##name AAA##name##Instance;
+
+#define scriptFunction(func) \
+scriptFunctionName(#func, func)
+
+#define scriptFunctionName(name, func) \
+run(Function* sc = makeCPPFunction(func); getDScriptEngine()->addFunction(FunctionPrototype( name, sc->getType()->getParamTypes()), sc);)
 
 namespace dscript {
 		
@@ -78,21 +86,144 @@ namespace dscript {
 		std::vector<Type*>* params;
 	};
 	
-	/*
-	template<class T>
-	class CPPFunctionWrapper0 : public Function {
-	public:
-		CPPFunctionWrapper(const T& func, Type* type) : func(func), type(new FunctionType(type,new vector<Type*>)) {}
-		virtual ~CPPFunctionWrapper() { delete type; }
+	// http://stackoverflow.com/a/10766422/1290655
+	// implementation details, users never invoke these directly
+	namespace detail
+	{
+		template <typename F, typename Tuple, bool Done, int Total, int... N>
+		struct call_impl
+		{
+			static auto call(F f, Tuple && t) ->
+			decltype(call_impl<F, Tuple, Total == 1 + sizeof...(N), Total, N..., sizeof...(N)>::call(f, std::forward<Tuple>(t)))
+			{
+				return call_impl<F, Tuple, Total == 1 + sizeof...(N), Total, N..., sizeof...(N)>::call(f, std::forward<Tuple>(t));
+			}
+		};
 		
-		virtual ScriptObject* call(std::vector<ScriptObject*>* values) { 
-			return func(values);
+		template <typename F, typename Tuple, int Total, int... N>
+		struct call_impl<F, Tuple, true, Total, N...>
+		{
+			static auto call(F f, Tuple && t) ->
+			decltype(f(std::get<N>(std::forward<Tuple>(t))...))
+			{
+				return f(std::get<N>(std::forward<Tuple>(t))...);
+			}
+		};
+		
+		template <typename F, typename Tuple, bool Done, int Total, int... N>
+		struct call_void_impl
+		{
+			static void call(F f, Tuple && t)
+			{
+				call_void_impl<F, Tuple, Total == 1 + sizeof...(N), Total, N..., sizeof...(N)>::call(f, std::forward<Tuple>(t));
+			}
+		};
+		
+		template <typename F, typename Tuple, int Total, int... N>
+		struct call_void_impl<F, Tuple, true, Total, N...>
+		{
+			static void call(F f, Tuple && t)
+			{
+				f(std::get<N>(std::forward<Tuple>(t))...);
+			}
+		};
+	}
+	
+	// user invokes this
+	template <typename F, typename Tuple>
+	auto callFn(F f, Tuple && t) ->
+	decltype(detail::call_impl<F, Tuple, 0 == std::tuple_size<typename std::decay<Tuple>::type>::value, std::tuple_size<typename std::decay<Tuple>::type>::value>::call(f, std::forward<Tuple>(t)))
+	{
+		typedef typename std::decay<Tuple>::type ttype;
+		return detail::call_impl<F, Tuple, 0 == std::tuple_size<ttype>::value, std::tuple_size<ttype>::value>::call(f, std::forward<Tuple>(t));
+	}
+	
+	template <typename F, typename Tuple>
+	void callVoidFn(F f, Tuple && t) {
+		typedef typename std::decay<Tuple>::type ttype;
+		detail::call_void_impl<F, Tuple, 0 == std::tuple_size<ttype>::value, std::tuple_size<ttype>::value>::call(f, std::forward<Tuple>(t));
+	}
+	
+	//end stack overflow
+	
+	template<typename Iterator, typename FirstArg>
+	std::tuple<FirstArg> tupleFromVector(Iterator begin, Iterator end) {
+		if(begin == end) {
+			throw "Not enough arguments to function.";
 		}
-		virtual FunctionType* getType() { return type; }
+		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())) {
+			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())->getValue();
+			return std::make_tuple(arg);
+		} else {
+			throw "Invalid argument type";
+		}
+	}
+	
+	template<typename Iterator, typename FirstArg, typename SecondArg, typename... Args>
+	std::tuple<FirstArg, SecondArg, Args...> tupleFromVector(Iterator begin, Iterator end) {
+		if(begin == end) {
+			throw "Not enough arguments to function.";
+		}
+		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())) {
+			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())->getValue();
+			begin++;
+			return std::tuple_cat(std::make_tuple(arg), tupleFromVector<Iterator, SecondArg, Args...>(begin,end));
+		} else {
+			throw "Invalid argument type";
+		}
+	}
+	
+	template<typename... Args>
+	std::vector<Type*>* argsVector() {
+		return new std::vector<Type*> {new CPPType<Args>()...};
+	}
+	
+	template<typename ReturnType, typename... Args>
+	class CPPFunction : public Function {
 	private:
-		T func;
-		FunctionType* type;
-	};*/
+		typedef ReturnType(*Func)(Args...);
+		Func fn;
+		FunctionType type;
+	public:
+		CPPFunction(Func fn) : fn(fn), type(new CPPType<ReturnType>(), argsVector<Args...>()) {
+			
+		}
+		~CPPFunction() {}
+		
+		FunctionType* getType() {
+			return &type;
+		}
+		
+		virtual ScriptObject call(std::vector<ScriptObject>& args) {
+			return ScriptObject(CPPObjectWrapper<ReturnType>(callFn(fn, tupleFromVector<std::vector<ScriptObject>::iterator, Args...>(args.begin(), args.end()))));
+		}
+	};
+	
+	template<typename... Args>
+	class CPPFunction<void, Args...> : public Function {
+	private:
+		typedef void(*Func)(Args...);
+		Func fn;
+		FunctionType type;
+	public:
+		CPPFunction(Func fn) : fn(fn), type(new VoidType(), argsVector<Args...>()) {}
+		~CPPFunction() {}
+		
+		FunctionType* getType() {
+			return &type;
+		}
+		
+		virtual ScriptObject call(std::vector<ScriptObject>& args) {
+			callVoidFn(fn, tupleFromVector<std::vector<ScriptObject>::iterator, Args...>(args.begin(), args.end()));
+			return ScriptObject();
+		}
+	};
+	
+	template<typename ReturnType, typename... Args>
+	auto makeCPPFunction(ReturnType(*fn)(Args...)) -> CPPFunction<ReturnType,Args...>* {
+		return new CPPFunction<ReturnType, Args...>(fn);
+	}
+	
 }
 
 #endif

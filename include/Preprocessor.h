@@ -11,13 +11,19 @@
 #define EVALUATOR2(x,y)  PASTER2(x,y)
 #define NAME2(fun) EVALUATOR2(fun, VARIABLE)
 
-#define run(code,name) \
-	class NAME(name) { \
+#define CONCAT_IMPL( x, y ) x##y
+#define MACRO_CONCAT( x, y ) CONCAT_IMPL( x, y )
+
+#define run_impl(code,name) \
+	class name { \
 	public: \
-		NAME(name) () { \
+		name () { \
 			code \
 		} \
 	}; \
-	NAME(name) NAME2(name);
+	name MACRO_CONCAT(name, _instance);
+
+#define run(code) \
+	run_impl(code, NAME(MACRO_CONCAT(run_, __COUNTER__)))
 
 #endif

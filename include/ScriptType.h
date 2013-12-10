@@ -39,7 +39,7 @@ namespace dscript {
 			return name;
 		}
 		virtual bool equals(Type* other) {
-			return dynamic_cast<CPPType<T> >(other) != NULL;
+			return dynamic_cast<CPPType<T>*>(other) != NULL;
 		}
 		virtual CPPType<T>* clone() {
 			return new CPPType<T>();

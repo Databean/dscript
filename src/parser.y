@@ -221,10 +221,10 @@ ParamDecl		:	Type T_Identifier						{$$ = new VarDeclaration($1,$2);}
 				|	Type '&' T_Identifier					{$$ = new ReferenceVarDeclaration($1,$3);}
 				;
 
-Type			:	T_IntType								{$$ = new SimpleType("Int");}
-				|	T_RealType								{$$ = new SimpleType("Real");}
-				|	T_StringType							{$$ = new SimpleType("String");}
-				|	T_BoolType								{$$ = new SimpleType("Bool");}
+Type			:	T_IntType								{$$ = new CPPType<int>();}
+				|	T_RealType								{$$ = new CPPType<float>();}
+				|	T_StringType							{$$ = new CPPType<std::string>();}
+				|	T_BoolType								{$$ = new CPPType<bool>();}
 				|	T_Void									{$$ = new VoidType();}
 				;
 

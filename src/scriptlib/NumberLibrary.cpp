@@ -6,151 +6,103 @@
 
 namespace dscript {
 	
-	#define makeIntRealOperator(name,op) \
-	makeBinaryOperatorClass(name,Int,op,Int,Int) \
-	makeBinaryOperatorClass(name,Real,op,Int,Real) \
-	makeBinaryOperatorClass(name,Int,op,Real,Real) \
-	makeBinaryOperatorClass(name,Real,op,Real,Real)
+	#define makeIntRealOperator(op) \
+	scriptBinaryOperator(#op, int, int, [](int a, int b) -> int { return a op b; }); \
+	scriptBinaryOperator(#op, float, int, [](float a, int b) -> float { return a op b; }); \
+	scriptBinaryOperator(#op, int, float, [](int a, float b) -> float { return a op b; }); \
+	scriptBinaryOperator(#op, float, float, [](float a, float b) -> float { return a op b; });
 	
-	#define makeComparisonOperator(name,op) \
-	makeBinaryOperatorClass(name,Int,op,Int,Bool) \
-	makeBinaryOperatorClass(name,Real,op,Int,Bool) \
-	makeBinaryOperatorClass(name,Int,op,Real,Bool) \
-	makeBinaryOperatorClass(name,Real,op,Real,Bool)
+	#define makeComparisonOperator(op) \
+	scriptBinaryOperator(#op, int, int, [](int a, int b) -> bool { return a op b; }); \
+	scriptBinaryOperator(#op, float, int, [](float a, int b) -> bool { return a op b; }); \
+	scriptBinaryOperator(#op, int, float, [](int a, float b) -> bool { return a op b; }); \
+	scriptBinaryOperator(#op, float, float, [](float a, float b) -> bool { return a op b; });
 	
-	makeIntRealOperator(plus,+)
-	makeIntRealOperator(minus,-)
-	makeIntRealOperator(multiply,*)
-	makeIntRealOperator(divide,/)
-	makeComparisonOperator(greaterThan,>)
-	makeComparisonOperator(lessThan,<)
-	makeComparisonOperator(equality,==)
-	makeComparisonOperator(greaterThanOrEqualTo,>=)
-	makeComparisonOperator(lessThanOrEqualTo,<=)
+	makeIntRealOperator(+)
+	makeIntRealOperator(-)
+	makeIntRealOperator(*)
+	makeIntRealOperator(/)
+	makeComparisonOperator(>)
+	makeComparisonOperator(<)
+	makeComparisonOperator(==)
+	makeComparisonOperator(>=)
+	makeComparisonOperator(<=)
 	
-	makeBinaryOperatorClass(modulo,Int,%,Int,Int)
-	makeBinaryOperatorClass(leftShift,Int,<<,Int,Int)
-	makeBinaryOperatorClass(rightShift,Int,>>,Int,Int)
-	makeBinaryOperatorClass(bitwiseAnd,Int,&,Int,Int)
-	makeBinaryOperatorClass(bitwiseOr,Int,|,Int,Int)
-	makeBinaryOperatorClass(bitwiseXor,Int,^,Int,Int)
-	makeBinaryOperatorClass(logicalAnd,Bool,&&,Bool,Bool)
-	makeBinaryOperatorClass(logicalOr,Bool,||,Bool,Bool)
+	scriptBinaryOperator("^", float, float, [](float a, float b) -> float { return std::pow(a, b); });
 	
-	makeUnaryOperatorClass(unaryMinus,-,Int,Int)
-	makeUnaryOperatorClass(unaryMinus,-,Real,Real)
-	makeUnaryOperatorClass(bitwiseNot,~,Int,Int)
-	makeUnaryOperatorClass(booleanNot,!,Bool,Bool)
+	#define intOp(op) \
+	scriptBinaryOperator(#op, int, int, [](int a, int b) -> int { return a % b; });
 	
-	BEGIN_MANUAL_BINARY_OPERATOR(intRaiseInt,new SimpleType("Int")) {
-		int left = BINARY_OPERATOR_PARAM_LEFT(Int);
-		int right = BINARY_OPERATOR_PARAM_RIGHT(Int);
-		int result = 1;
-		while(right>0) {
-			while(right%2==0) {
-				right /= 2;
-				left *= left;
-			}
-			right--;
-			result *= left;
-		}
-		return ScriptObject(ScriptInt(result));
-	} END_MANUAL_BINARY_OPERATOR(intRaiseInt,new SimpleType("Int"),new SimpleType("Int"),"^",new SimpleType("Int"))
+	intOp(%)
+	intOp(&)
+	intOp(|)
+	intOp(^)
+	intOp(<<)
+	intOp(>>)
+	intOp(&&)
+	intOp(||)
 	
-	BEGIN_MANUAL_BINARY_OPERATOR(realRaiseInt,new SimpleType("Real")) {
-		float left = BINARY_OPERATOR_PARAM_LEFT(Real);
-		float right = BINARY_OPERATOR_PARAM_RIGHT(Int);
-		return ScriptObject(ScriptReal(pow(left,right)));
-	} END_MANUAL_BINARY_OPERATOR(realRaiseInt,new SimpleType("Real"),new SimpleType("Real"),"^",new SimpleType("Int"))
+	scriptUnaryOperator("-", int, [](int i) -> int { return -i; });
+	scriptUnaryOperator("-", float, [](float f) -> float { return -f; });
+	scriptUnaryOperator("~", int, [](int i) -> int { return ~i; });
+	scriptUnaryOperator("!", bool, [](bool b) -> bool { return !b; });
 	
-	BEGIN_MANUAL_BINARY_OPERATOR(intRaiseReal,new SimpleType("Real")) {
-		float left = BINARY_OPERATOR_PARAM_LEFT(Int);
-		float right = BINARY_OPERATOR_PARAM_RIGHT(Real);
-		return ScriptObject(ScriptReal(pow(left,right)));
-	} END_MANUAL_BINARY_OPERATOR(intRaiseReal,new SimpleType("Real"),new SimpleType("Int"),"^",new SimpleType("Real"))
+	int maxIntInt(int a, int b) {
+		return std::max<int>(a, b);
+	}
+	scriptFunctionName("max", maxIntInt);
 	
-	BEGIN_MANUAL_BINARY_OPERATOR(realRaiseReal,new SimpleType("Real")) {
-		float left = BINARY_OPERATOR_PARAM_LEFT(Real);
-		float right = BINARY_OPERATOR_PARAM_RIGHT(Real);
-		return ScriptObject(ScriptReal(pow(left,right)));
-	} END_MANUAL_BINARY_OPERATOR(realRaiseReal,new SimpleType("Real"),new SimpleType("Real"),"^",new SimpleType("Real"))
+	int maxIntFloat(int a, float b) {
+		return std::max<float>(a, b);
+	}
+	scriptFunctionName("max", maxIntFloat);
 	
-	SCRIPT_BEGIN_FUNC(intIntMax,new SimpleType("Int"),2,new SimpleType("Int"),new SimpleType("Int")) {
-		int a = SCRIPT_PARAM(Int,0);
-		int b = SCRIPT_PARAM(Int,1);
-		return ScriptObject(ScriptInt(std::max<int>(a,b)));
-	} SCRIPT_END_FUNC(intIntMax,"max")
+	int maxFloatInt(float a, int b) {
+		return std::max<float>(a, b);
+	}
+	scriptFunctionName("max", maxFloatInt);
 	
-	SCRIPT_BEGIN_FUNC(intRealMax,new SimpleType("Real"),2,new SimpleType("Int"),new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Int,0);
-		float b = SCRIPT_PARAM(Real,1);
-		return ScriptObject(ScriptReal(std::max<float>(a,b)));
-	} SCRIPT_END_FUNC(intRealMax,"max")
+	int maxFloatFloat(float a, float b) {
+		return std::max<float>(a, b);
+	}
+	scriptFunctionName("max", maxFloatFloat);
 	
-	SCRIPT_BEGIN_FUNC(realIntMax,new SimpleType("Real"),2,new SimpleType("Real"),new SimpleType("Int")) {
-		float a = SCRIPT_PARAM(Real,0);
-		int b = SCRIPT_PARAM(Int,1);
-		return ScriptObject(ScriptReal(std::max<float>(a,b)));
-	} SCRIPT_END_FUNC(realIntMax,"max")
+	int minIntInt(int a, int b) {
+		return std::min<int>(a, b);
+	}
+	scriptFunctionName("min", minIntInt);
 	
-	SCRIPT_BEGIN_FUNC(realRealMax,new SimpleType("Real"),2,new SimpleType("Real"),new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Real,0);
-		float b = SCRIPT_PARAM(Real,1);
-		return ScriptObject(ScriptReal(std::max<float>(a,b)));
-	} SCRIPT_END_FUNC(realRealMax,"max")
+	int minIntFloat(int a, float b) {
+		return std::min<float>(a, b);
+	}
+	scriptFunctionName("min", minIntFloat);
 	
-	SCRIPT_BEGIN_FUNC(intIntMin,new SimpleType("Int"),2,new SimpleType("Int"),new SimpleType("Int")) {
-		int a = SCRIPT_PARAM(Int,0);
-		int b = SCRIPT_PARAM(Int,1);
-		return ScriptObject(ScriptInt(std::min<int>(a,b)));
-	} SCRIPT_END_FUNC(intIntMin,"min")
+	int minFloatInt(float a, int b) {
+		return std::min<float>(a, b);
+	}
+	scriptFunctionName("min", minFloatInt);
 	
-	SCRIPT_BEGIN_FUNC(intRealMin,new SimpleType("Real"),2,new SimpleType("Int"),new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Int,0);
-		float b = SCRIPT_PARAM(Real,1);
-		return ScriptObject(ScriptReal(std::min<float>(a,b)));
-	} SCRIPT_END_FUNC(intRealMin,"min")
+	int minFloatFloat(float a, float b) {
+		return std::min<float>(a, b);
+	}
+	scriptFunctionName("min", minFloatFloat);
 	
-	SCRIPT_BEGIN_FUNC(realIntMin,new SimpleType("Real"),2,new SimpleType("Real"),new SimpleType("Int")) {
-		float a = SCRIPT_PARAM(Real,0);
-		int b = SCRIPT_PARAM(Int,1);
-		return ScriptObject(ScriptReal(std::min<float>(a,b)));
-	} SCRIPT_END_FUNC(realIntMin,"min")
+	float makeReal(int i) {
+		return i;
+	}
+	scriptFunctionName("real", makeReal);
 	
-	SCRIPT_BEGIN_FUNC(realRealMin,new SimpleType("Real"),2,new SimpleType("Real"),new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Real,0);
-		float b = SCRIPT_PARAM(Real,1);
-		return ScriptObject(ScriptReal(std::min<float>(a,b)));
-	} SCRIPT_END_FUNC(realRealMin,"min")
+	int makeInt(float f) {
+		return f;
+	}
+	scriptFunctionName("int", makeInt);
 	
-	SCRIPT_BEGIN_FUNC(intToReal,new SimpleType("Real"),1,new SimpleType("Int")) {
-		int a = SCRIPT_PARAM(Int,0);
-		return ScriptObject(ScriptReal(a));
-	} SCRIPT_END_FUNC(intToReal,"real");
+	float sqrtReal(float f) {
+		return std::sqrt(f);
+	}
+	scriptFunctionName("sqrt", sqrtReal);
 	
-	SCRIPT_BEGIN_FUNC(realToInt,new SimpleType("Int"),1,new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Real,0);
-		return ScriptObject(ScriptInt(a));
-	} SCRIPT_END_FUNC(realToInt,"int")
-	
-	SCRIPT_BEGIN_FUNC(intToInt,new SimpleType("Int"),1,new SimpleType("Int")) {
-		int a = SCRIPT_PARAM(Int,0);
-		return ScriptObject(ScriptInt(a));
-	} SCRIPT_END_FUNC(intToInt,"int")
-	
-	SCRIPT_BEGIN_FUNC(realToReal,new SimpleType("Real"),1,new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Real,0);
-		return ScriptObject(ScriptReal(a));
-	} SCRIPT_END_FUNC(realToReal,"real")
-	
-	SCRIPT_BEGIN_FUNC(realSqrt,new SimpleType("Real"),1,new SimpleType("Real")) {
-		float a = SCRIPT_PARAM(Real,0);
-		return ScriptObject(ScriptReal(sqrt(a)));
-	} SCRIPT_END_FUNC(realSqrt,"sqrt")
-	
-	SCRIPT_BEGIN_FUNC(intSqrt,new SimpleType("Real"),1,new SimpleType("Int")) {
-		float a = SCRIPT_PARAM(Int,0);
-		return ScriptObject(ScriptReal(sqrt(a)));
-	} SCRIPT_END_FUNC(intSqrt,"sqrt");
-	
+	float sqrtInt(int i) {
+		return std::sqrt(i);
+	}
 }
