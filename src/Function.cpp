@@ -14,14 +14,14 @@ namespace dscript {
 		this->parameters = parameters;
 		this->run = run;
 		
-		std::vector<Type*>* paramTypes = new std::vector<Type*>;
+		std::vector<Type*>* paramTypes = new std::vector<Type*>();
 		for(std::vector<Declaration*>::iterator it = parameters->begin(); it != parameters->end(); it++) {
 			paramTypes->push_back((*it)->getType());
 		}
 		type = new FunctionType(retType,paramTypes);
 	}
 	ScriptFunction::~ScriptFunction() {
-		delete paramTypes;
+		//delete paramTypes;
 	}
 	void ScriptFunction::setParentScope(Scope* s) {
 		parentscope = s;

@@ -36,6 +36,6 @@ Real fibbonaciLoop(Int n) {
 println("calculating factorial");
 println("factorial(10)="+factorial(10));
 println("calculating fibbonaci (fast O(n) way)");
-println("fibbonaciLoop(25)="+fibbonaciLoop(25));
+println("fibbonaciLoop(15)="+fibbonaciLoop(15));
 println("calculating fibbonaci (slow O(phi^n) way)");
-println("fibbonaci(25)="+fibbonaci(25));
+println("fibbonaci(15)="+fibbonaci(15));

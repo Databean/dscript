@@ -129,13 +129,15 @@ namespace dscript {
 		return &type;
 	}
 	
-	ReferenceExpr::ReferenceExpr(VarExpr* ve) {
+	ReferenceExpr::ReferenceExpr(VarExpr* ve) : type(NULL) {
 		this->ve = ve;
 		ve->setParent(this);
 	}
 	ReferenceExpr::~ReferenceExpr() {
 		delete ve;
-		delete type;
+		if(type) {
+			delete type;
+		}
 	}
 	bool ReferenceExpr::verify() {
 		DEBUG("verifying reference expr");

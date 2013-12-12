@@ -68,7 +68,10 @@ namespace dscript {
 		}
 	}
 	Program::~Program() {
-		
+		for(Statement* statement : *statements) {
+			delete statement;
+		}
+		delete statements;
 	}
 	bool Program::verify() {
 		bool ret = true;

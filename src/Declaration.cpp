@@ -32,7 +32,6 @@ namespace dscript {
 		this->type = initialValue->getType();
 	}*/
 	VarDeclaration::~VarDeclaration() {
-		if(type) { delete type; }
 		if(initialValue) { delete initialValue; }
 	}
 	bool VarDeclaration::verify() {
