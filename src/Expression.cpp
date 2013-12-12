@@ -49,7 +49,7 @@ namespace dscript {
 		}
 		std::vector<Type*>* paramTypes = new std::vector<Type*>;
 		for(std::vector<Expression*>::iterator it=params->begin();it!=params->end();it++) {
-			paramTypes->push_back((*it)->getType());
+			paramTypes->push_back(&(*it)->getType());
 		}
 		FunctionPrototype fp(func,paramTypes);
 		if(!(calling = getFunction(fp))) {
@@ -60,8 +60,8 @@ namespace dscript {
 		delete paramTypes;
 		return true;
 	}
-	Type* FunctionCall::getType() {
-		return dynamic_cast<FunctionType*>(calling->getType())->getReturnType();
+	Type& FunctionCall::getType() {
+		return *dynamic_cast<FunctionType&>(*calling->getType()).getReturnType();
 	}
 	
 	StringLiteralExpr::StringLiteralExpr(std::string* s) {
@@ -77,8 +77,8 @@ namespace dscript {
 	bool StringLiteralExpr::verify() {
 		return true;
 	}
-	Type* StringLiteralExpr::getType() {
-		return &type;
+	Type& StringLiteralExpr::getType() {
+		return type;
 	}
 	
 	IntLiteralExpr::IntLiteralExpr(int i) {
@@ -93,8 +93,8 @@ namespace dscript {
 	bool IntLiteralExpr::verify() {
 		return true;
 	}
-	Type* IntLiteralExpr::getType() {
-		return &type;
+	Type& IntLiteralExpr::getType() {
+		return type;
 	}
 	
 	RealLiteralExpr::RealLiteralExpr(float d) {
@@ -109,8 +109,8 @@ namespace dscript {
 	bool RealLiteralExpr::verify() {
 		return true;
 	}
-	Type* RealLiteralExpr::getType() {
-		return &type;
+	Type& RealLiteralExpr::getType() {
+		return type;
 	}
 	
 	BoolLiteralExpr::BoolLiteralExpr(bool b) {
@@ -125,8 +125,8 @@ namespace dscript {
 	bool BoolLiteralExpr::verify() {
 		return true;
 	}
-	Type* BoolLiteralExpr::getType() {
-		return &type;
+	Type& BoolLiteralExpr::getType() {
+		return type;
 	}
 	
 	ReferenceExpr::ReferenceExpr(VarExpr* ve) : type(NULL) {
@@ -146,11 +146,11 @@ namespace dscript {
 			return false;
 		}
 		DEBUG("blah");
-		type = new ReferenceType(ve->getType());
+		type = new ReferenceType(&ve->getType());
 		return true;
 	}
-	Type* ReferenceExpr::getType() {
-		return type;
+	Type& ReferenceExpr::getType() {
+		return *type;
 	}
 	ScriptObject ReferenceExpr::evaluate(Scope* s) {
 		return ScriptObject(*(ve->getReference(s)));
@@ -192,9 +192,13 @@ namespace dscript {
 	std::string IdentVar::getName() {
 		return name;
 	}
-	Type* IdentVar::getType() {
+	Type& IdentVar::getType() {
 		Variable* v = getVariable(name);
-		return v ? v->getType() : NULL;
+		if(v) {
+			return *v->getType();
+		} else {
+			throw "Ident var references a NULL variable";
+		}
 	}
 	Reference* IdentVar::getReference(Scope* scope) {
 		return new VariableReference(scope->getVariable(name));

@@ -42,7 +42,7 @@ namespace dscript {
 				delete me;
 				return false;
 			}
-			if(!(initialValue->getType()->equals(type))) {
+			if(!(initialValue->getType().equals(type))) {
 				std::cout << "initial value does not match type" << std::endl;
 				delete me;
 				return false;
@@ -129,7 +129,7 @@ namespace dscript {
 				std::cout << "variable " << name << " initial value does not verify" << std::endl;
 				return false;
 			}
-			if(!dynamic_cast<ReferenceType*>(initialValue->getType())) {
+			if(!dynamic_cast<ReferenceType*>(&initialValue->getType())) {
 				std::cout << "variable " << name << " initial value is not a reference" << std::endl;
 			}
 		}

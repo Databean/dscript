@@ -8,7 +8,7 @@ namespace dscript {
 		Expression();
 		virtual ~Expression();
 		virtual ScriptObject evaluate(Scope*)=0;
-		virtual Type* getType()=0;
+		virtual Type& getType()=0;
 	};
 	
 	class StringLiteralExpr : public Expression {
@@ -17,7 +17,7 @@ namespace dscript {
 		virtual ~StringLiteralExpr();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		std::string s;
 		CPPType<std::string> type;
@@ -29,7 +29,7 @@ namespace dscript {
 		virtual ~IntLiteralExpr();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		int i;
 		CPPType<int> type;
@@ -41,7 +41,7 @@ namespace dscript {
 		virtual ~RealLiteralExpr();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		float d;
 		CPPType<float> type;
@@ -53,7 +53,7 @@ namespace dscript {
 		virtual ~BoolLiteralExpr();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		bool b;
 		CPPType<bool> type;
@@ -65,7 +65,7 @@ namespace dscript {
 		virtual ~FunctionCall();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		std::string func;
 		std::vector<Expression*>* params;
@@ -77,7 +77,7 @@ namespace dscript {
 		ReferenceExpr(VarExpr*);
 		virtual ~ReferenceExpr();
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 		virtual ScriptObject evaluate(Scope*);
 	private:
 		VarExpr* ve;
@@ -101,7 +101,7 @@ namespace dscript {
 		virtual ScriptObject evaluate(Scope*);
 		virtual void setValue(ScriptObject newVal,Scope* scope);
 		virtual std::string getName();
-		virtual Type* getType();
+		virtual Type& getType();
 		virtual Reference* getReference(Scope*);
 	private:
 		std::string name;
@@ -115,7 +115,7 @@ namespace dscript {
 		
 		virtual ScriptFunction* evaluate(Scope* s);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		Type* type;
 		std::vector<VarDeclaration*>* parameters;

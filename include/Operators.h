@@ -27,7 +27,7 @@ namespace dscript {
 		virtual ~BinarySetOperator();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	private:
 		VarExpr* set;
 		Expression* equalTo;
@@ -39,7 +39,7 @@ namespace dscript {
 		virtual ~UnarySetOperator();
 		virtual ScriptObject evaluate(Scope*);
 		virtual bool verify();
-		virtual Type* getType();
+		virtual Type& getType();
 	protected:
 		virtual void initialize(VarExpr* set,std::string op,bool opFirst);
 	private:
@@ -69,7 +69,7 @@ namespace dscript {
 		virtual ~BinaryOperatorFunc();
 		
 		virtual ScriptObject evaluate(ScriptObject left,ScriptObject right)=0;
-		virtual Type* getType()=0;
+		virtual Type& getType()=0;
 	};
 	
 	template<typename Ret, typename LeftSide, typename RightSide>
@@ -93,8 +93,8 @@ namespace dscript {
 			}
 			return ScriptObject(CPPObjectWrapper<Ret>(fn(lhs->getValue(),rhs->getValue())));
 		}
-		virtual Type* getType() {
-			return &type;
+		virtual Type& getType() {
+			return type;
 		}
 	};
 	
@@ -104,7 +104,7 @@ namespace dscript {
 		virtual ~BinaryOperator();
 		
 		virtual ScriptObject evaluate(Scope* s);
-		virtual Type* getType();
+		virtual Type& getType();
 		virtual bool verify();
 	private:
 		Expression* left;
@@ -133,7 +133,7 @@ namespace dscript {
 		virtual ~UnaryOperatorFunc();
 		
 		virtual ScriptObject evaluate(ScriptObject right)=0;
-		virtual Type* getType()=0;
+		virtual Type& getType()=0;
 	};
 	
 	template<typename Ret, typename ParamType>
@@ -153,8 +153,8 @@ namespace dscript {
 			}
 			return ScriptObject(CPPObjectWrapper<Ret>(fn(par->getValue())));
 		}
-		virtual Type* getType() {
-			return &type;
+		virtual Type& getType() {
+			return type;
 		}
 	};
 		
@@ -165,7 +165,7 @@ namespace dscript {
 		virtual ~UnaryOperator();
 		
 		virtual ScriptObject evaluate(Scope* s);
-		virtual Type* getType();
+		virtual Type& getType();
 		virtual bool verify();
 	private:
 		std::string op;

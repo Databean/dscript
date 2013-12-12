@@ -68,9 +68,9 @@ namespace dscript {
 			std::cout << "while condition invalid" << std::endl;
 			return false;
 		}
-		Type* t = condition->getType();
-		CPPType<bool>* st = dynamic_cast<CPPType<bool>*>(t);
-		if(!st) {
+		Type& t = condition->getType();
+		CPPType<bool> comp;
+		if(!t.equals(&comp)) {
 			std::cout << "while condition type is not bool" << std::endl;
 			return false;
 		}
@@ -117,9 +117,9 @@ namespace dscript {
 			std::cout << "if statement else statement invalid" << std::endl;
 			return false;
 		}
-		Type* t = condition->getType();
-		CPPType<bool>* st = dynamic_cast<CPPType<bool>*>(t);
-		if(!st) {
+		Type& t = condition->getType();
+		CPPType<bool> comp;
+		if(!t.equals(&comp)) {
 			std::cout << "conditional type is not Bool" << std::endl;
 			return false;
 		}
@@ -160,10 +160,10 @@ namespace dscript {
 			std::cout << "function type is not a FunctionType" << std::endl;
 			return false;
 		}
-		if(!(ft->getReturnType()->equals(val->getType()))) {
+		if(!(ft->getReturnType()->equals(&val->getType()))) {
 			std::cout << "return type does not match function type" << std::endl;
 			std::cout << "function is supposed to return " << ft->getReturnType()->getName() << std::endl;
-			std::cout << "return expression returns something of type " << val->getType()->getName() << std::endl;
+			std::cout << "return expression returns something of type " << val->getType().getName() << std::endl;
 			return false;
 		}
 		return true;

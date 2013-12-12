@@ -27,13 +27,13 @@ namespace dscript {
 			std::cout << "right side of set expr invalid" << std::endl;
 			return false;
 		}
-		if(!(set->getType()->equals(equalTo->getType()))) {
+		if(!(set->getType().equals(&equalTo->getType()))) {
 			std::cout << "type of set expression not equal to type of variable" << std::endl;
 			return false;
 		}
 		return true;
 	}
-	Type* BinarySetOperator::getType() {
+	Type& BinarySetOperator::getType() {
 		return set->getType();
 	}
 	
@@ -52,7 +52,7 @@ namespace dscript {
 	UnarySetOperator::~UnarySetOperator() {
 		delete set;
 	}
-	Type* UnarySetOperator::getType() {
+	Type& UnarySetOperator::getType() {
 		return set->getType();
 	}
 	bool UnarySetOperator::verify() {
@@ -60,9 +60,9 @@ namespace dscript {
 			std::cout << "unary set expr invalid" << std::endl;
 			return false;
 		}
-		Type* t = set->getType();
-		CPPType<int>* intType = dynamic_cast<CPPType<int>*>(t);
-		CPPType<float>* realType = dynamic_cast<CPPType<float>*>(t);
+		Type& t = set->getType();
+		CPPType<int>* intType = dynamic_cast<CPPType<int>*>(&t);
+		CPPType<float>* realType = dynamic_cast<CPPType<float>*>(&t);
 		if(!intType && !realType) {
 			std::cout << "unary set expr type is not Int or Real" << std::endl;
 			return false;
@@ -136,16 +136,16 @@ namespace dscript {
 			std::cout << "left or right verify failed" << std::endl;
 			return false;
 		}
-		opObj = getDScriptEngine()->getBinaryOperator(BinaryOperatorType(left->getType(),op,right->getType()));
+		opObj = getDScriptEngine()->getBinaryOperator(BinaryOperatorType(&left->getType(),op,&right->getType()));
 		if(!opObj) {
-			std::cout << "There is no operator " << left->getType()->getName() << " " << op << right->getType()->getName() << std::endl;
+			std::cout << "There is no operator " << left->getType().getName() << " " << op << right->getType().getName() << std::endl;
 		}
 		return true;
 	}
 	ScriptObject BinaryOperator::evaluate(Scope* s) {
 		return opObj->evaluate(left->evaluate(s),right->evaluate(s));
 	}
-	Type* BinaryOperator::getType() {
+	Type& BinaryOperator::getType() {
 		return opObj->getType();
 	}
 	
@@ -184,9 +184,9 @@ namespace dscript {
 		if(!(right->verify())) {
 			return false;
 		}
-		opObj = getDScriptEngine()->getUnaryOperator(UnaryOperatorType(op,right->getType()));
+		opObj = getDScriptEngine()->getUnaryOperator(UnaryOperatorType(op,&right->getType()));
 		if(!opObj) {
-			std::cout << "There is no operator " << op << right->getType()->getName() << std::endl;
+			std::cout << "There is no operator " << op << right->getType().getName() << std::endl;
 			return false;
 		}
 		return true;
@@ -194,7 +194,7 @@ namespace dscript {
 	ScriptObject UnaryOperator::evaluate(Scope* s) {
 		return opObj->evaluate(right->evaluate(s));
 	}
-	Type* UnaryOperator::getType() {
+	Type& UnaryOperator::getType() {
 		return opObj->getType();
 	}
 	
