@@ -35,7 +35,7 @@ namespace dscript {
 		if(initialValue) { delete initialValue; }
 	}
 	bool VarDeclaration::verify() {
-		Variable* me = new NamedVariable(name,type,getDScriptEngine()->getDefaultObject(type));
+		Variable* me = new NamedVariable(name,type,type->defaultObject());
 		if(initialValue) {
 			if(!(initialValue->verify())) {
 				std::cout << "variable initial value bad" << std::endl;
@@ -57,7 +57,7 @@ namespace dscript {
 		return true;
 	}
 	ScriptObject VarDeclaration::evaluate(Scope* scope) {
-		Variable* me = new NamedVariable(name,type,getDScriptEngine()->getDefaultObject(type));
+		Variable* me = new NamedVariable(name,type,type->defaultObject());
 		scope->addVariable(me);
 		if(initialValue) {
 			me->setValue(initialValue->evaluate(scope));

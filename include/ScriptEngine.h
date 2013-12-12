@@ -9,7 +9,6 @@ namespace dscript {
 		ScriptEngine();
 		virtual ~ScriptEngine();
 		virtual bool verify();
-		ScriptObject getDefaultObject(Type* t);
 		virtual Scope* getScope();
 		
 		virtual void addVariable(Variable* v);
@@ -25,7 +24,6 @@ namespace dscript {
 		virtual void addFunction(FunctionPrototype,Function* f);
 		
 	private:
-		std::map<std::string,ScriptObject> defaultValues;
 		std::map<BinaryOperatorType,BinaryOperatorFunc*> binaryOperators;
 		std::map<UnaryOperatorType,UnaryOperatorFunc*> unaryOperators;
 		std::map<FunctionPrototype,Function*> functions;

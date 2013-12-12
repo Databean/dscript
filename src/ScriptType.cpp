@@ -9,42 +9,20 @@ namespace dscript {
 		
 	}
 	
-	SimpleType::SimpleType(std::string typeName) {
-		this->typeName = typeName;
-	}
-	SimpleType::SimpleType(std::string* typeName) {
-		this->typeName = *typeName;
-		delete typeName;
-	}
-	SimpleType::~SimpleType() {
-		
-	}
-	std::string SimpleType::getTypeName() {
-		return typeName;
-	}
-	std::string SimpleType::getName() {
-		return typeName;
-	}
-	bool SimpleType::equals(Type* other) {
-		SimpleType* test = dynamic_cast<SimpleType*>(other);
-		if(test) {
-			return test->getTypeName()==typeName;
-		} else {
-			return false;
-		}
-	}
-	bool SimpleType::verify() {
-		return getDScriptEngine()->getDefaultObject(this).getWrapped() != 0;
-	}
-	SimpleType* SimpleType::clone() {
-		return new SimpleType(typeName);
-	}
+	template<> std::string CPPType<int>::name = "Int";
+	template<> ScriptObject CPPType<int>::defaultInstance = ScriptObject(CPPObjectWrapper<int>(0));
 	
-	template<> std::string CPPType<int>::name = "C++Int";
-	template<> std::string CPPType<std::string>::name = "C++String";
-	template<> std::string CPPType<float>::name = "C++Real";
-	template<> std::string CPPType<bool>::name = "C++Bool";
-	template<> std::string CPPType<void>::name = "C++Void";
+	template<> std::string CPPType<std::string>::name = "String";
+	template<> ScriptObject CPPType<std::string>::defaultInstance = ScriptObject(CPPObjectWrapper<std::string>(""));
+	
+	template<> std::string CPPType<float>::name = "Real";
+	template<> ScriptObject CPPType<float>::defaultInstance = ScriptObject(CPPObjectWrapper<float>(0.f));
+	
+	template<> std::string CPPType<bool>::name = "Bool";
+	template<> ScriptObject CPPType<bool>::defaultInstance = ScriptObject(CPPObjectWrapper<bool>(false));
+	
+	template<> std::string CPPType<void>::name = "Void";
+	template<> ScriptObject CPPType<void>::defaultInstance = ScriptObject();
 	
 	FunctionType::FunctionType(Type* returnType,std::vector<Type*>* paramTypes) {
 		this->returnType = returnType;
@@ -96,6 +74,10 @@ namespace dscript {
 	std::vector<Type*>* FunctionType::getParamTypes() {
 		return paramTypes;
 	}
+	ScriptObject FunctionType::defaultObject() {
+		//TODO: but I don't think this needs to exist yet
+		return ScriptObject();
+	}
 	
 	VoidType::VoidType() {
 		
@@ -114,6 +96,9 @@ namespace dscript {
 	}
 	VoidType* VoidType::clone() {
 		return new VoidType();
+	}
+	ScriptObject VoidType::defaultObject() {
+		return ScriptObject();
 	}
 	
 	ReferenceType::ReferenceType(Type* wrapped) {
@@ -140,5 +125,8 @@ namespace dscript {
 	}
 	ReferenceType* ReferenceType::clone() {
 		return new ReferenceType(wrapped->clone());
+	}
+	ScriptObject ReferenceType::defaultObject() {
+		return ScriptObject(DefaultReference(wrapped));
 	}
 }

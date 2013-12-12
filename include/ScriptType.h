@@ -11,24 +11,13 @@ namespace dscript {
 		virtual std::string getName()=0;
 		virtual Type* clone()=0;
 		virtual bool verify()=0;
-	};
-	class SimpleType : public Type {
-	public:
-		SimpleType(std::string typeName);
-		SimpleType(std::string* typeName);
-		virtual ~SimpleType();
-		virtual std::string getTypeName();
-		virtual std::string getName();
-		virtual bool equals(Type* other);
-		virtual SimpleType* clone();
-		virtual bool verify();
-	private:
-		std::string typeName;
+		virtual ScriptObject defaultObject()=0;
 	};
 	template<typename T>
 	class CPPType : public Type {
 	private:
 		static std::string name;
+		static ScriptObject defaultInstance;
 	public:
 		CPPType() {}
 		virtual ~CPPType() {}
@@ -47,6 +36,9 @@ namespace dscript {
 		virtual bool verify() {
 			return name != "";
 		}
+		virtual ScriptObject defaultObject() {
+			return defaultInstance;
+		}
 	};
 		
 	class FunctionType : public Type {
@@ -59,6 +51,7 @@ namespace dscript {
 		virtual std::vector<Type*>* getParamTypes();
 		virtual FunctionType* clone();
 		virtual bool verify();
+		virtual ScriptObject defaultObject();
 	private:
 		Type* returnType;
 		std::vector<Type*>* paramTypes;
@@ -71,6 +64,7 @@ namespace dscript {
 		virtual std::string getName();
 		virtual bool verify();
 		virtual VoidType* clone();
+		virtual ScriptObject defaultObject();
 	};
 	class StructType : public Type {
 	public:
@@ -79,6 +73,7 @@ namespace dscript {
 		virtual std::string getName();
 		virtual StructType* clone();
 		virtual bool verify();
+		virtual ScriptObject defaultObject();
 	private:
 		
 	};
@@ -91,6 +86,7 @@ namespace dscript {
 		virtual Type* getWrapped();
 		virtual bool verify();
 		virtual ReferenceType* clone();
+		virtual ScriptObject defaultObject();
 	private:
 		Type* wrapped;
 	};

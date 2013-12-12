@@ -5,11 +5,6 @@ namespace dscript {
 	ScriptEngine::ScriptEngine() {
 		std::cout << "initializing script engine" << std::endl;
 		
-		defaultValues[std::string("Int")] = ScriptObject(ScriptInt(0));
-		defaultValues[std::string("Real")] = ScriptObject(ScriptReal(0.0f));
-		defaultValues[std::string("String")] = ScriptObject(ScriptString(""));
-		defaultValues[std::string("Bool")] = ScriptObject(ScriptBool(false));
-		
 		scope = new Scope(NULL);
 	}
 	ScriptEngine::~ScriptEngine() {
@@ -17,13 +12,6 @@ namespace dscript {
 	}
 	bool ScriptEngine::verify() {
 		return true;
-	}
-	ScriptObject ScriptEngine::getDefaultObject(Type* t) {
-		SimpleType* st = dynamic_cast<SimpleType*>(t);
-		if(st) {
-			return defaultValues[st->getTypeName()];
-		}
-		return ScriptObject();
 	}
 	Variable* ScriptEngine::getVariable(std::string name) {
 		return scope->getVariable(name);

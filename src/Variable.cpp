@@ -79,7 +79,7 @@ namespace dscript {
 	
 	DefaultReference::DefaultReference(Type* type) {
 		this->type = type;
-		this->value = getDScriptEngine()->getDefaultObject(type);
+		this->value = type->defaultObject();
 	}
 	DefaultReference::~DefaultReference() {
 		
