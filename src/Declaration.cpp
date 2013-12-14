@@ -42,7 +42,7 @@ namespace dscript {
 				delete me;
 				return false;
 			}
-			if(!(initialValue->getType().equals(type))) {
+			if(!(initialValue->getType() == *(type))) {
 				std::cout << "initial value does not match type" << std::endl;
 				delete me;
 				return false;

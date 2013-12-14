@@ -27,7 +27,7 @@ namespace dscript {
 			std::cout << "right side of set expr invalid" << std::endl;
 			return false;
 		}
-		if(!(set->getType().equals(&equalTo->getType()))) {
+		if(!(set->getType() == (equalTo->getType()))) {
 			std::cout << "type of set expression not equal to type of variable" << std::endl;
 			return false;
 		}

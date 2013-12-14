@@ -7,7 +7,7 @@ namespace dscript {
 	public:
 		Type();
 		virtual ~Type();
-		virtual bool equals(Type* other)=0;
+		virtual bool operator==(Type& other)=0;
 		virtual std::string getName()=0;
 		virtual Type* clone()=0;
 		virtual bool verify()=0;
@@ -27,8 +27,8 @@ namespace dscript {
 		virtual std::string getName() {
 			return name;
 		}
-		virtual bool equals(Type* other) {
-			return dynamic_cast<CPPType<T>*>(other) != NULL;
+		virtual bool operator==(Type& other) {
+			return dynamic_cast<CPPType<T>*>(&other) != NULL;
 		}
 		virtual CPPType<T>* clone() {
 			return new CPPType<T>();
@@ -45,7 +45,7 @@ namespace dscript {
 	public:
 		FunctionType(Type* returnType,std::vector<Type*>* paramTypes);
 		virtual ~FunctionType();
-		virtual bool equals(Type* other);
+		virtual bool operator==(Type& other);
 		virtual Type* getReturnType();
 		virtual std::string getName();
 		virtual std::vector<Type*>* getParamTypes();
@@ -60,7 +60,7 @@ namespace dscript {
 	public:
 		VoidType();
 		virtual ~VoidType();
-		virtual bool equals(Type* other);
+		virtual bool operator==(Type& other);
 		virtual std::string getName();
 		virtual bool verify();
 		virtual VoidType* clone();
@@ -69,7 +69,7 @@ namespace dscript {
 	class StructType : public Type {
 	public:
 		StructType(std::vector<VarDeclaration*>*);
-		virtual bool equals(Type* other);
+		virtual bool operator==(Type& other);
 		virtual std::string getName();
 		virtual StructType* clone();
 		virtual bool verify();
@@ -81,7 +81,7 @@ namespace dscript {
 	public:
 		ReferenceType(Type* wrapped);
 		virtual ~ReferenceType();
-		virtual bool equals(Type* other);
+		virtual bool operator==(Type& other);
 		virtual std::string getName();
 		virtual Type* getWrapped();
 		virtual bool verify();

@@ -70,7 +70,7 @@ namespace dscript {
 		}
 		Type& t = condition->getType();
 		CPPType<bool> comp;
-		if(!t.equals(&comp)) {
+		if(!(t == comp)) {
 			std::cout << "while condition type is not bool" << std::endl;
 			return false;
 		}
@@ -119,7 +119,7 @@ namespace dscript {
 		}
 		Type& t = condition->getType();
 		CPPType<bool> comp;
-		if(!t.equals(&comp)) {
+		if(!(t == comp)) {
 			std::cout << "conditional type is not Bool" << std::endl;
 			return false;
 		}
@@ -160,7 +160,7 @@ namespace dscript {
 			std::cout << "function type is not a FunctionType" << std::endl;
 			return false;
 		}
-		if(!(ft->getReturnType()->equals(&val->getType()))) {
+		if(!(*ft->getReturnType() == *(&val->getType()))) {
 			std::cout << "return type does not match function type" << std::endl;
 			std::cout << "function is supposed to return " << ft->getReturnType()->getName() << std::endl;
 			std::cout << "return expression returns something of type " << val->getType().getName() << std::endl;

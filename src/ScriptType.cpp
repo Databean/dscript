@@ -42,9 +42,23 @@ namespace dscript {
 	std::string FunctionType::getName() {
 		return "function";
 	}
-	bool FunctionType::equals(Type* other) {
-		FunctionType* test = dynamic_cast<FunctionType*>(other);
+	bool FunctionType::operator==(Type& other) {
+		FunctionType* test = dynamic_cast<FunctionType*>(&other);
 		if(test) {
+			if(!(*returnType == *(test->getReturnType()))) {
+				return false;
+			}
+			if(paramTypes->size() != test->getParamTypes()->size()) {
+				return false;
+			}
+			for(auto it1 = paramTypes->begin(), it2 = test->getParamTypes()->begin();
+				it1 != paramTypes->end() && it2 != test->getParamTypes()->end();
+				it1++, it2++) {
+				
+				if(!(**it1 == **it2)) {
+					return false;
+				}
+			}
 			return true;
 		} else {
 			return false;
@@ -85,8 +99,8 @@ namespace dscript {
 	VoidType::~VoidType() {
 		
 	}
-	bool VoidType::equals(Type* t) {
-		return dynamic_cast<VoidType*>(t) == 0;
+	bool VoidType::operator==(Type& t) {
+		return dynamic_cast<VoidType*>(&t) == 0;
 	}
 	std::string VoidType::getName() {
 		return "void";
@@ -107,12 +121,13 @@ namespace dscript {
 	ReferenceType::~ReferenceType() {
 		delete wrapped;
 	}
-	bool ReferenceType::equals(Type* other) {
-		ReferenceType* rt = dynamic_cast<ReferenceType*>(other);
-		if(!rt) {
-			return wrapped->equals(other);
+	bool ReferenceType::operator==(Type& other) {
+		ReferenceType* rt = dynamic_cast<ReferenceType*>(&other);
+		if(rt) {
+			return *wrapped == *rt->wrapped;
+		} else {
+			return *wrapped == other;
 		}
-		return wrapped->equals(rt->wrapped);
 	}
 	std::string ReferenceType::getName() {
 		return wrapped->getName()+"&";
