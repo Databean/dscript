@@ -7,7 +7,7 @@ namespace dscript {
 	class Node;
 	class ScopedNode;
 	//ScriptObject.h
-	class ScriptObject;
+	//class ScriptObject;
 	class ObjectBase;
 	//Variable.h
 	class Variable;

@@ -3,6 +3,49 @@
 
 namespace dscript {
 	
+	template<typename Base>
+	class InheritanceHider {
+	private:
+		Base* object;
+	public:
+		inline InheritanceHider() { object = nullptr; }
+		inline InheritanceHider(const InheritanceHider& other) {
+			if(other.object) {
+				object = other.object->clone();
+			} else {
+				object = nullptr;
+			}
+		}
+		inline InheritanceHider(InheritanceHider&& other) {
+			object = other.object;
+			other.object = nullptr;
+		}
+		inline InheritanceHider(const Base& b) { 
+			object = b.clone();
+		}
+		inline ~InheritanceHider() {
+			if(object) {
+				delete object;
+			}
+		}
+		inline InheritanceHider& operator=(const InheritanceHider& other) {
+			if(this != &other) {
+				if(object) {
+					delete object;
+				}
+				if(other.object) {
+					object = other.object->clone();
+				} else {
+					object = nullptr;
+				}
+			}
+			return *this;
+		}
+		inline Base* getWrapped() {
+			return object;
+		}
+	};
+	
 	class ObjectBase {
 	public:
 		ObjectBase();
@@ -11,38 +54,7 @@ namespace dscript {
 		virtual ObjectBase* clone() const =0;
 	};
 	
-	class ScriptObject {
-	public:
-		inline ScriptObject() { object = nullptr; }
-		inline ScriptObject(const ScriptObject& other) {
-			if(other.object != nullptr) {
-				object = other.object->clone();
-			} else {
-				object = nullptr;
-			}
-		}
-		inline ScriptObject(ScriptObject&& other) {
-			object = other.object;
-			other.object = nullptr;
-		}
-		inline ScriptObject(const ObjectBase& b) { object = b.clone(); }
-		inline ~ScriptObject() { if(object) { delete object; } }
-		inline const ScriptObject& operator=(const ScriptObject& other) {
-			if(this != &other) {
-				if(object) { delete object; }
-				if(other.object != nullptr) {
-					object = other.object->clone();
-				} else {
-					object = nullptr;
-				}
-			}
-			return *this;
-		}
-		inline ObjectBase* getWrapped() { return object; }
-		//friend void std::swap(ScriptObject& a,ScriptObject& b);
-	private:
-		ObjectBase* object;
-	};
+	typedef InheritanceHider<ObjectBase> ScriptObject;
 	
 	template<class T>
 	class CPPObjectWrapper : public ObjectBase {
