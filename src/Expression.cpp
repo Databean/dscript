@@ -203,37 +203,4 @@ namespace dscript {
 	Reference* IdentVar::getReference(Scope* scope) {
 		return new VariableReference(scope->getVariable(name));
 	}
-	
-	/*
-	FunctionExpression::FunctionExpression(Type* returnType,std::vector<VarDeclaration*>* parameters,Statement* run) {
-		this->parameters = parameters;
-		this->run = run;
-		std::vector<Statement*>* stmtList = new std::vector<Statement*>;
-		
-		
-		std::vector<Type*>* paramTypes = new std::vector<Type*>;
-		for(std::vector<VarDeclaration*>::iterator it = parameters->begin(); it != parameters->end(); it++) {
-			paramTypes->push_back((*it)->getType());
-			stmtList->push_back(*it);
-		}
-		stmtList->push_back(run);
-		fakeBlock = new StatementBlock(stmtList);
-		type = new FunctionType(returnType,paramTypes);
-		fakeBlock->setParent(this);
-		DEBUG("");
-	}
-	FunctionExpression::~FunctionExpression() {
-		delete type;
-		delete fakeBlock;
-	}
-	Type* FunctionExpression::getType() {
-		return type;
-	}
-	bool FunctionExpression::verify() {
-		DEBUG("verifying function expression");
-		return fakeBlock->verify();
-	}
-	ScriptFunction* FunctionExpression::evaluate(Scope* scope) {
-		return new ScriptFunction(type,parameters,run,scope);
-	}*/
 }
