@@ -24,26 +24,26 @@ namespace dscript {
 	Scope* ScriptEngine::getScope() {
 		return scope;
 	}
-	void ScriptEngine::addBinaryOperator(BinaryOperatorType type,BinaryOperatorFunc* func) {
-		binaryOperators[type] = func;
+	void ScriptEngine::addBinaryOperator(BinaryOperatorType type, std::unique_ptr<BinaryOperatorFunc> func) {
+		binaryOperators[type] = std::move(func);
 	}
 	BinaryOperatorFunc* ScriptEngine::getBinaryOperator(BinaryOperatorType type) {
-		return binaryOperators[type];
+		return binaryOperators[type].get();
 	}
-	void ScriptEngine::addUnaryOperator(UnaryOperatorType type,UnaryOperatorFunc* func) {
-		unaryOperators[type] = func;
+	void ScriptEngine::addUnaryOperator(UnaryOperatorType type, std::unique_ptr<UnaryOperatorFunc> func) {
+		unaryOperators[type] = std::move(func);
 	}
 	UnaryOperatorFunc* ScriptEngine::getUnaryOperator(UnaryOperatorType type) {
-		return unaryOperators[type];
+		return unaryOperators[type].get();
 	}
 	Function* ScriptEngine::getFunction(FunctionPrototype fp) {
-		return functions[fp];
+		return functions[fp].get();
 	}
-	void ScriptEngine::addFunction(FunctionPrototype fp,Function* f) {
-		functions[fp]=f;
+	void ScriptEngine::addFunction(FunctionPrototype fp, std::unique_ptr<Function> f) {
+		functions[fp] = std::move(f);
 	}
-	void ScriptEngine::addFunction(const std::string& name, Function* f) {
-		functions[FunctionPrototype(name, f->getType()->getParamTypes())] = f;
+	void ScriptEngine::addFunction(const std::string& name, std::unique_ptr<Function> f) {
+		functions[FunctionPrototype(name, f->getType()->getParamTypes())] = std::move(f);
 	}
 	
 	Program::Program(std::vector<Statement*>* statements) {

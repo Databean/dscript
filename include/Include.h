@@ -67,6 +67,7 @@ namespace dscript {
 #include <map>
 #include <string>
 #include <typeinfo>
+#include <memory>
 //include script h files
 #include "Preprocessor.h"
 #include "Node.h"

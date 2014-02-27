@@ -6,12 +6,12 @@
 run(auto f = fn;\
 	getDScriptEngine()->addBinaryOperator( \
 BinaryOperatorType(new CPPType<leftType>(), name, new CPPType<rightType>()), \
-new BinaryOperatorCPPFunc<decltype(f(leftType(),rightType())),leftType,rightType>(f));)
+std::unique_ptr<BinaryOperatorFunc>(new BinaryOperatorCPPFunc<decltype(f(leftType(),rightType())),leftType,rightType>(f)));)
 
 #define scriptUnaryOperator(name,type,fn) \
 run(auto f = fn; \
 	getDScriptEngine()->addUnaryOperator( \
-UnaryOperatorType(name, new CPPType<type>), new UnaryOperatorCPPFunc<decltype(f(type())),type>(f));)
+UnaryOperatorType(name, new CPPType<type>), std::unique_ptr<UnaryOperatorFunc>(new UnaryOperatorCPPFunc<decltype(f(type())),type>(f)));)
 
 #include "ScriptType.h"
 #include "ScriptEngine.h"

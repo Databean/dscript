@@ -14,20 +14,20 @@ namespace dscript {
 		virtual void addVariable(Variable* v);
 		virtual Variable* getVariable(std::string name);
 		
-		virtual void addBinaryOperator(BinaryOperatorType,BinaryOperatorFunc*);
+		virtual void addBinaryOperator(BinaryOperatorType, std::unique_ptr<BinaryOperatorFunc>);
 		virtual BinaryOperatorFunc* getBinaryOperator(BinaryOperatorType);
 		
-		virtual void addUnaryOperator(UnaryOperatorType,UnaryOperatorFunc*);
+		virtual void addUnaryOperator(UnaryOperatorType, std::unique_ptr<UnaryOperatorFunc>);
 		virtual UnaryOperatorFunc* getUnaryOperator(UnaryOperatorType);
 		
 		virtual Function* getFunction(FunctionPrototype);
-		virtual void addFunction(FunctionPrototype,Function* f);
-		virtual void addFunction(const std::string& name, Function* f);
+		virtual void addFunction(FunctionPrototype, std::unique_ptr<Function> f);
+		virtual void addFunction(const std::string& name, std::unique_ptr<Function> f);
 		
 	private:
-		std::map<BinaryOperatorType,BinaryOperatorFunc*> binaryOperators;
-		std::map<UnaryOperatorType,UnaryOperatorFunc*> unaryOperators;
-		std::map<FunctionPrototype,Function*> functions;
+		std::map<BinaryOperatorType,std::unique_ptr<BinaryOperatorFunc>> binaryOperators;
+		std::map<UnaryOperatorType,std::unique_ptr<UnaryOperatorFunc>> unaryOperators;
+		std::map<FunctionPrototype,std::unique_ptr<Function>> functions;
 		Scope* scope;
 	};
 	

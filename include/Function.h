@@ -4,34 +4,6 @@
 #include <utility>
 #include <functional>
 
-#define SCRIPT_BEGIN_FUNC(funcID, retType, argc, ...) \
-class ScriptFunc_##funcID : public dscript::Function { \
-private: \
-	dscript::FunctionType* type; \
-public: \
-	ScriptFunc_##funcID () { \
-		std::vector<dscript::Type*>* paramTypes = new std::vector<dscript::Type*>(); \
-		dscript::Type* types[] = { __VA_ARGS__ } ; \
-		for(int i=0;i<argc;i++) { \
-			paramTypes->push_back(types[i]); \
-		} \
-		type = new dscript::FunctionType(retType,paramTypes); \
-	} \
-	~ScriptFunc_##funcID () { \
-		delete type; \
-	} \
-	dscript::FunctionType* getType() { \
-		return type; \
-	} \
-	ScriptObject call(std::vector<dscript::ScriptObject>& params)
-
-#define SCRIPT_PARAM(scriptType,num) \
-	reinterpret_cast< Script##scriptType * >(params[num].getWrapped())->getValue();
-
-#define SCRIPT_END_FUNC(funcID,scriptName) \
-}; \
-run(Function* sc = new ScriptFunc_##funcID () ; getDScriptEngine()->addFunction(FunctionPrototype( scriptName , sc->getType()->getParamTypes()) , sc);) 
-
 #define RUN_FIRST(name,code) \
 class AAA##name { \
 	AAA##name () { code } \
@@ -42,8 +14,13 @@ AAA##name AAA##name##Instance;
 #define scriptFunction(func) \
 scriptFunctionName(#func, func)
 
+// The evaluation order of function parameters is undefined, so the the type variable has to be created first
+// since std::move(sc) might evaluate first and leave sc in an invalid state to give type information.
+
 #define scriptFunctionName(name, func) \
-run(Function* sc = makeCPPFunction(func); getDScriptEngine()->addFunction(FunctionPrototype( name, sc->getType()->getParamTypes()), sc);)
+run(auto sc = makeCPPFunction(func); \
+auto type = FunctionPrototype( name, sc->getType()->getParamTypes()); \
+getDScriptEngine()->addFunction(type, std::move(sc));)
 
 namespace dscript {
 		
@@ -228,13 +205,13 @@ namespace dscript {
 	
 	
 	template<typename ReturnType, typename... Args>
-	auto makeCPPFunction(ReturnType(*fn)(Args...)) -> CPPFunction<ReturnType,Args...>* {
-		return new CPPFunction<ReturnType, Args...>(fn);
+	std::unique_ptr<Function> makeCPPFunction(ReturnType(*fn)(Args...)) {
+		return std::unique_ptr<Function>(new CPPFunction<ReturnType, Args...>(fn));
 	}
 	
 	template<typename ReturnType, typename... Args>
-	auto makeCPPFunction(std::function<ReturnType(Args...)> fn) -> CPPFunction<ReturnType,Args...>* {
-		return new CPPFunction<ReturnType, Args...>(fn);
+	std::unique_ptr<Function> makeCPPFunction(std::function<ReturnType(Args...)> fn) {
+		return std::unique_ptr<Function>(new CPPFunction<ReturnType, Args...>(fn));
 	}
 	
 }
