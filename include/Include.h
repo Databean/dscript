@@ -78,6 +78,7 @@ namespace dscript {
 #include "Function.h"
 #include "Declaration.h"
 #include "Operators.h"
+#include "ScriptLib.h"
 
 
 #endif

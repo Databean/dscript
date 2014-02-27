@@ -6,6 +6,7 @@ namespace dscript {
 		std::cout << "initializing script engine" << std::endl;
 		
 		scope = new Scope(NULL);
+		addPrintingLibrary(*this);
 	}
 	ScriptEngine::~ScriptEngine() {
 		
@@ -40,6 +41,9 @@ namespace dscript {
 	}
 	void ScriptEngine::addFunction(FunctionPrototype fp,Function* f) {
 		functions[fp]=f;
+	}
+	void ScriptEngine::addFunction(const std::string& name, Function* f) {
+		functions[FunctionPrototype(name, f->getType()->getParamTypes())] = f;
 	}
 	
 	Program::Program(std::vector<Statement*>* statements) {

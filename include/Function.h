@@ -2,6 +2,7 @@
 #define FUNCTION_H
 
 #include <utility>
+#include <functional>
 
 #define SCRIPT_BEGIN_FUNC(funcID, retType, argc, ...) \
 class ScriptFunc_##funcID : public dscript::Function { \
@@ -219,8 +220,20 @@ namespace dscript {
 		}
 	};
 	
+	template <typename T>
+	struct identity
+	{
+		typedef T type;
+	};
+	
+	
 	template<typename ReturnType, typename... Args>
 	auto makeCPPFunction(ReturnType(*fn)(Args...)) -> CPPFunction<ReturnType,Args...>* {
+		return new CPPFunction<ReturnType, Args...>(fn);
+	}
+	
+	template<typename ReturnType, typename... Args>
+	auto makeCPPFunction(std::function<ReturnType(Args...)> fn) -> CPPFunction<ReturnType,Args...>* {
 		return new CPPFunction<ReturnType, Args...>(fn);
 	}
 	

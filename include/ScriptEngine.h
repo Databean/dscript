@@ -22,6 +22,7 @@ namespace dscript {
 		
 		virtual Function* getFunction(FunctionPrototype);
 		virtual void addFunction(FunctionPrototype,Function* f);
+		virtual void addFunction(const std::string& name, Function* f);
 		
 	private:
 		std::map<BinaryOperatorType,BinaryOperatorFunc*> binaryOperators;

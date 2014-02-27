@@ -1,47 +1,20 @@
 #include "Include.h"
 #include "Debug.h"
 
+using std::cout;
+using std::endl;
+
 namespace dscript {
 	
-	
-	void printInt(int i) {
-		std::cout << i;
+	void addPrintingLibrary(ScriptEngine& engine) {
+		engine.addFunction("print", new CPPFunction<void, int>([](int i) { cout << i; }));
+		engine.addFunction("println", new CPPFunction<void, int>([](int i) { cout << i << endl; }));
+		engine.addFunction("print", new CPPFunction<void, float>([](float f) { cout << f; }));
+		engine.addFunction("println", new CPPFunction<void, float>([](float f) { cout << f << endl; }));
+		engine.addFunction("print", new CPPFunction<void, std::string>([](std::string f) { cout << f; }));
+		engine.addFunction("println", new CPPFunction<void, std::string>([](std::string f) { cout << f << endl; }));
+		engine.addFunction("print", new CPPFunction<void, bool>([](bool b) { cout << (b ? "true" : "false"); }));
+		engine.addFunction("println", new CPPFunction<void, bool>([](bool b) { cout << (b ? "true" : "false") << endl; }));
 	}
-	scriptFunctionName("print", printInt);
-	
-	void printlnInt(int i) {
-		std::cout << i << std::endl;
-	}
-	scriptFunctionName("println", printlnInt);
-	
-	void printFloat(float f) {
-		std::cout << f;
-	}
-	scriptFunctionName("print", printFloat);
-	
-	void printlnFloat(float f) {
-		std::cout << f << std::endl;
-	}
-	scriptFunctionName("println", printlnFloat);
-	
-	void printString(std::string s) {
-		std::cout << s;
-	}
-	scriptFunctionName("print", printString);
-	
-	void printlnString(std::string s) {
-		std::cout << s << std::endl;
-	}
-	scriptFunctionName("println", printlnString);
-	
-	void printBool(bool b) {
-		std::cout << (b ? "true" : "false");
-	}
-	scriptFunctionName("print", printBool);
-	
-	void printlnBool(bool b) {
-		std::cout << (b ? "true" : "false") << std::endl;
-	}
-	scriptFunctionName("println", printlnBool);
 	
 }
