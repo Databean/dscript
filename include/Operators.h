@@ -82,15 +82,15 @@ namespace dscript {
 		~BinaryOperatorCPPFunc() {}
 		
 		virtual ScriptObject evaluate(ScriptObject left, ScriptObject right) {
-			CPPObjectWrapper<LeftSide>* lhs = dynamic_cast<CPPObjectWrapper<LeftSide>*>(left.getWrapped());
+			CPPObjectWrapper<LeftSide>* lhs = dynamic_cast<CPPObjectWrapper<LeftSide>*>(left.get());
 			if(!lhs) {
 				throw "left side of operator type incorrect";
 			}
-			CPPObjectWrapper<RightSide>* rhs = dynamic_cast<CPPObjectWrapper<RightSide>*>(right.getWrapped());
+			CPPObjectWrapper<RightSide>* rhs = dynamic_cast<CPPObjectWrapper<RightSide>*>(right.get());
 			if(!rhs) {
 				throw "right side of operator type incorrect";
 			}
-			return ScriptObject(CPPObjectWrapper<Ret>(fn(lhs->getValue(),rhs->getValue())));
+			return ScriptObject(new CPPObjectWrapper<Ret>(fn(lhs->getValue(),rhs->getValue())));
 		}
 		virtual Type& getType() {
 			return type;
@@ -146,11 +146,11 @@ namespace dscript {
 		~UnaryOperatorCPPFunc() {}
 		
 		virtual ScriptObject evaluate(ScriptObject param) {
-			CPPObjectWrapper<ParamType>* par = dynamic_cast<CPPObjectWrapper<ParamType>*>(param.getWrapped());
+			CPPObjectWrapper<ParamType>* par = dynamic_cast<CPPObjectWrapper<ParamType>*>(param.get());
 			if(!par) {
 				throw "right side of operator type incorrect";
 			}
-			return ScriptObject(CPPObjectWrapper<Ret>(fn(par->getValue())));
+			return ScriptObject(new CPPObjectWrapper<Ret>(fn(par->getValue())));
 		}
 		virtual Type& getType() {
 			return type;

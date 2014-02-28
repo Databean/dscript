@@ -74,7 +74,7 @@ namespace dscript {
 		
 	}
 	ScriptObject StringLiteralExpr::evaluate(Scope* scope) {
-		return ScriptObject(ScriptString(s));
+		return ScriptObject(new ScriptString(s));
 	}
 	bool StringLiteralExpr::verify() {
 		return true;
@@ -90,7 +90,7 @@ namespace dscript {
 		
 	}
 	ScriptObject IntLiteralExpr::evaluate(Scope* scope) {
-		return ScriptObject(ScriptInt(i));
+		return ScriptObject(new ScriptInt(i));
 	}
 	bool IntLiteralExpr::verify() {
 		return true;
@@ -106,7 +106,7 @@ namespace dscript {
 		
 	}
 	ScriptObject RealLiteralExpr::evaluate(Scope* scope) {
-		return ScriptObject(ScriptReal(d));
+		return ScriptObject(new ScriptReal(d));
 	}
 	bool RealLiteralExpr::verify() {
 		return true;
@@ -122,7 +122,7 @@ namespace dscript {
 		
 	}
 	ScriptObject BoolLiteralExpr::evaluate(Scope* scope) {
-		return ScriptObject(ScriptBool(b));
+		return ScriptObject(new ScriptBool(b));
 	}
 	bool BoolLiteralExpr::verify() {
 		return true;
@@ -155,7 +155,7 @@ namespace dscript {
 		return *type;
 	}
 	ScriptObject ReferenceExpr::evaluate(Scope* s) {
-		return ScriptObject(*(ve->getReference(s)));
+		return ScriptObject(ve->getReference(s)->clone());
 	}
 	
 	VarExpr::VarExpr() {
@@ -175,7 +175,7 @@ namespace dscript {
 	void IdentVar::setValue(ScriptObject s,Scope* scope) {
 		Variable* v = scope->getVariable(name);
 		if(v) {
-			v->setValue(s);
+			v->setValue(std::move(s));
 		} else {
 			std::cout << "wtf?" << std::endl;
 		}

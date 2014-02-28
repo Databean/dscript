@@ -44,7 +44,7 @@ namespace dscript {
 			return name != "";
 		}
 		virtual ScriptObject defaultObject() {
-			return defaultInstance;
+			return ScriptObject(defaultInstance->clone());
 		}
 	};
 		

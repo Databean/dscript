@@ -149,7 +149,7 @@ namespace dscript {
 	ScriptObject ReferenceVarDeclaration::evaluate(Scope* scope) {
 		Reference* r = NULL;
 		if(initialValue) {
-			r = dynamic_cast<Reference*>(initialValue->evaluate(scope).getWrapped());
+			r = dynamic_cast<Reference*>(initialValue->evaluate(scope).get());
 		} else {
 			r = new DefaultReference(type);
 		}

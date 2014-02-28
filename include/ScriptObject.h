@@ -2,53 +2,11 @@
 #define SCRIPT_OBJECT_H
 
 #include <string>
+#include <memory>
 
 namespace dscript {
 	
 	class Type;
-	
-	template<typename Base>
-	class InheritanceHider {
-	private:
-		Base* object;
-	public:
-		inline InheritanceHider() { object = nullptr; }
-		inline InheritanceHider(const InheritanceHider& other) {
-			if(other.object) {
-				object = other.object->clone();
-			} else {
-				object = nullptr;
-			}
-		}
-		inline InheritanceHider(InheritanceHider&& other) {
-			object = other.object;
-			other.object = nullptr;
-		}
-		inline InheritanceHider(const Base& b) { 
-			object = b.clone();
-		}
-		inline ~InheritanceHider() {
-			if(object) {
-				delete object;
-			}
-		}
-		inline InheritanceHider& operator=(const InheritanceHider& other) {
-			if(this != &other) {
-				if(object) {
-					delete object;
-				}
-				if(other.object) {
-					object = other.object->clone();
-				} else {
-					object = nullptr;
-				}
-			}
-			return *this;
-		}
-		inline Base* getWrapped() {
-			return object;
-		}
-	};
 	
 	class ObjectBase {
 	public:
@@ -58,7 +16,7 @@ namespace dscript {
 		virtual ObjectBase* clone() const =0;
 	};
 	
-	typedef InheritanceHider<ObjectBase> ScriptObject;
+	typedef std::unique_ptr<ObjectBase> ScriptObject;
 	
 	template<class T>
 	class CPPObjectWrapper : public ObjectBase {

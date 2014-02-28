@@ -18,17 +18,17 @@ namespace dscript {
 		return name;
 	}
 	
-	NamedVariable::NamedVariable(std::string name,Type* type,ScriptObject initialValue) : Variable(name,type), value(initialValue) {
+	NamedVariable::NamedVariable(std::string name,Type* type,ScriptObject initialValue) : Variable(name,type), value(std::move(initialValue)) {
 		
 	}
 	NamedVariable::~NamedVariable() {
 		
 	}
 	ScriptObject NamedVariable::getValue() {
-		return value;
+		return ScriptObject(value->clone());
 	}
 	void NamedVariable::setValue(ScriptObject newval) {
-		value = newval;
+		value = std::move(newval);
 	}
 	
 	ReferenceVariable::ReferenceVariable(std::string name,Type* typ,Reference* ref) : Variable(name,typ) {
@@ -41,11 +41,11 @@ namespace dscript {
 		return ref->getValue();
 	}
 	void ReferenceVariable::setValue(ScriptObject so) {
-		Reference* r = dynamic_cast<Reference*>(so.getWrapped());
+		Reference* r = dynamic_cast<Reference*>(so.get());
 		if(r) {
 			setReference(r);
 		} else {
-			ref->setValue(so);
+			ref->setValue(std::move(so));
 		}
 	}
 	void ReferenceVariable::setReference(Reference* _ref) {
@@ -73,7 +73,7 @@ namespace dscript {
 		return ref->getValue();
 	}
 	void VariableReference::setValue(ScriptObject so) {
-		ref->setValue(so);
+		ref->setValue(std::move(so));
 	}
 	ObjectBase* VariableReference::clone() const {
 		return new VariableReference(ref);
@@ -90,14 +90,14 @@ namespace dscript {
 		return type;
 	}
 	ScriptObject DefaultReference::getValue() const {
-		return value;
+		return ScriptObject(value->clone());
 	}
 	void DefaultReference::setValue(ScriptObject so) {
-		this->value = so;
+		this->value = std::move(so);
 	}
 	ObjectBase* DefaultReference::clone() const {
 		DefaultReference* ret = new DefaultReference(type);
-		ret->setValue(value);
+		ret->setValue(ScriptObject(value->clone()));
 		return ret;
 	}
 	

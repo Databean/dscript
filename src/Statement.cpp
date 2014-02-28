@@ -33,9 +33,9 @@ namespace dscript {
 		Scope* s = new Scope(scope);
 		for(std::vector<Statement*>::iterator i = statements->begin(); i < statements->end(); i++) {
 			ScriptObject so = (*i)->evaluate(s);
-			if(so.getWrapped() && !dynamic_cast<Expression*>(*i)) { 
+			if(so && !dynamic_cast<Expression*>(*i)) { 
 				delete s;
-				return so; 
+				return std::move(so); 
 			}
 		}
 		delete s;
@@ -82,11 +82,11 @@ namespace dscript {
 	ScriptObject WhileStatement::evaluate(Scope* scope) {
 		while(true) {
 			ScriptObject so = condition->evaluate(scope);
-			ScriptBool* sb = dynamic_cast<ScriptBool*>(so.getWrapped());
+			ScriptBool* sb = dynamic_cast<ScriptBool*>(so.get());
 			if(!sb) { return ScriptObject(); }
 			if(!sb->getValue()) { return ScriptObject(); }
 			ScriptObject so2 = loop->evaluate(scope);
-			if(so2.getWrapped()) { return so2; }
+			if(so2) { return std::move(so2); }
 		}
 		return ScriptObject();
 	}
@@ -130,7 +130,7 @@ namespace dscript {
 	}
 	ScriptObject IfStatement::evaluate(Scope* s) {
 		ScriptObject so = condition->evaluate(s);
-		ScriptBool* sb = dynamic_cast<ScriptBool*>(so.getWrapped());
+		ScriptBool* sb = dynamic_cast<ScriptBool*>(so.get());
 		if(sb->getValue()) {
 			return then->evaluate(s);
 		} else if(els) {

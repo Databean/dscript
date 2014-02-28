@@ -17,7 +17,7 @@ namespace dscript {
 	}
 	ScriptObject BinarySetOperator::evaluate(Scope* scope) {
 		ScriptObject so = equalTo->evaluate(scope);
-		set->setValue(so,scope);
+		set->setValue(ScriptObject(so->clone()),scope);
 		return so;
 	}
 	bool BinarySetOperator::verify() {
@@ -74,8 +74,8 @@ namespace dscript {
 	ScriptObject UnarySetOperator::evaluate(Scope* scope) {
 		ScriptObject startVal = set->evaluate(scope);
 		
-		ScriptReal* sr = dynamic_cast<ScriptReal*>(startVal.getWrapped());
-		ScriptInt* si = dynamic_cast<ScriptInt*>(startVal.getWrapped());
+		ScriptReal* sr = dynamic_cast<ScriptReal*>(startVal.get());
+		ScriptInt* si = dynamic_cast<ScriptInt*>(startVal.get());
 		
 		ScriptObject newVal;
 		ScriptObject ret;
@@ -83,14 +83,14 @@ namespace dscript {
 		int mod = op == "++" ? 1 : -1;
 		
 		if(sr) {
-			newVal = ScriptObject(ScriptReal(sr->getValue()+mod));
+			newVal = ScriptObject(new ScriptReal(sr->getValue()+mod));
 		} else if(si) {
-			newVal = ScriptObject(ScriptInt(si->getValue()+mod));
+			newVal = ScriptObject(new ScriptInt(si->getValue()+mod));
 		} else {
 			std::cout << "wtf" << std::endl;
 		}
 		
-		set->setValue(newVal,scope);
+		set->setValue(ScriptObject(newVal->clone()),scope);
 		if(opFirst) {
 			return newVal;
 		} else {

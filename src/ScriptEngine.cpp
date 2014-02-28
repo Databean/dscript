@@ -1,5 +1,10 @@
 #include "ScriptEngine.h"
-#include "Include.h"
+
+#include <iostream>
+
+#include "ScriptLib.h"
+#include "Function.h"
+#include "Declaration.h"
 
 namespace dscript {
 	ScriptEngine::ScriptEngine() {

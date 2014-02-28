@@ -12,16 +12,16 @@ namespace dscript {
 	}
 	
 	template<> std::string CPPType<int>::name = "Int";
-	template<> ScriptObject CPPType<int>::defaultInstance = ScriptObject(CPPObjectWrapper<int>(0));
+	template<> ScriptObject CPPType<int>::defaultInstance = ScriptObject(new CPPObjectWrapper<int>(0));
 	
 	template<> std::string CPPType<std::string>::name = "String";
-	template<> ScriptObject CPPType<std::string>::defaultInstance = ScriptObject(CPPObjectWrapper<std::string>(""));
+	template<> ScriptObject CPPType<std::string>::defaultInstance = ScriptObject(new CPPObjectWrapper<std::string>(""));
 	
 	template<> std::string CPPType<float>::name = "Real";
-	template<> ScriptObject CPPType<float>::defaultInstance = ScriptObject(CPPObjectWrapper<float>(0.f));
+	template<> ScriptObject CPPType<float>::defaultInstance = ScriptObject(new CPPObjectWrapper<float>(0.f));
 	
 	template<> std::string CPPType<bool>::name = "Bool";
-	template<> ScriptObject CPPType<bool>::defaultInstance = ScriptObject(CPPObjectWrapper<bool>(false));
+	template<> ScriptObject CPPType<bool>::defaultInstance = ScriptObject(new CPPObjectWrapper<bool>(false));
 	
 	template<> std::string CPPType<void>::name = "Void";
 	template<> ScriptObject CPPType<void>::defaultInstance = ScriptObject();
@@ -144,6 +144,6 @@ namespace dscript {
 		return new ReferenceType(wrapped->clone());
 	}
 	ScriptObject ReferenceType::defaultObject() {
-		return ScriptObject(DefaultReference(wrapped));
+		return ScriptObject(new DefaultReference(wrapped));
 	}
 }

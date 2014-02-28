@@ -39,7 +39,7 @@ namespace dscript {
 		}
 		
 		for(size_t i=0;i<paramValues.size();i++) {
-			(scope->getVariable(parameters->at(i)->getName()))->setValue(paramValues[i]);
+			(scope->getVariable(parameters->at(i)->getName()))->setValue(std::move(paramValues[i]));
 		}
 		
 		Scope* s = new Scope(scope);

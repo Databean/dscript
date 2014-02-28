@@ -140,8 +140,8 @@ namespace dscript {
 		if(begin == end) {
 			throw "Not enough arguments to function.";
 		}
-		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())) {
-			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())->getValue();
+		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->get())) {
+			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->get())->getValue();
 			return std::make_tuple(arg);
 		} else {
 			throw "Invalid argument type";
@@ -153,8 +153,8 @@ namespace dscript {
 		if(begin == end) {
 			throw "Not enough arguments to function.";
 		}
-		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())) {
-			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->getWrapped())->getValue();
+		if(dynamic_cast<CPPObjectWrapper<FirstArg>*>(begin->get())) {
+			FirstArg arg = reinterpret_cast<CPPObjectWrapper<FirstArg>*>(begin->get())->getValue();
 			begin++;
 			return std::tuple_cat(std::make_tuple(arg), tupleFromVector<Iterator, SecondArg, Args...>(begin,end));
 		} else {
@@ -184,7 +184,7 @@ namespace dscript {
 		}
 		
 		virtual ScriptObject call(std::vector<ScriptObject>& args) {
-			return ScriptObject(CPPObjectWrapper<ReturnType>(callFn(fn, tupleFromVector<std::vector<ScriptObject>::iterator, Args...>(args.begin(), args.end()))));
+			return ScriptObject(new CPPObjectWrapper<ReturnType>(callFn(fn, tupleFromVector<std::vector<ScriptObject>::iterator, Args...>(args.begin(), args.end()))));
 		}
 	};
 	
