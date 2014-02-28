@@ -1,5 +1,8 @@
-#include "Include.h"
+#include "Statement.h"
 #include "Debug.h"
+
+#include "Declaration.h"
+#include "Expression.h"
 
 namespace dscript {
 	Statement::Statement() {

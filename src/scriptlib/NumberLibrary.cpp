@@ -1,4 +1,7 @@
-#include "Include.h"
+#include "Preprocessor.h"
+#include "ScriptEngine.h"
+#include "Function.h"
+#include "Operators.h"
 #include "Debug.h"
 
 #include <algorithm>

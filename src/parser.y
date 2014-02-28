@@ -10,8 +10,11 @@
 #include <vector>
 #include <iostream>
 
-#include "Include.h"
-
+#include "Declaration.h"
+#include "Statement.h"
+#include "ScriptEngine.h"
+#include "Expression.h"
+#include "Variable.h"
 
 using namespace dscript;
 using namespace std;

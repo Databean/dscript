@@ -1,4 +1,6 @@
-#include "Include.h"
+#include "Preprocessor.h"
+#include "ScriptEngine.h"
+#include "Function.h"
 #include "Debug.h"
 
 using std::cout;

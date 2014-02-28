@@ -1,5 +1,10 @@
+#include "Function.h"
 #include "Debug.h"
-#include "Include.h"
+
+#include <string>
+
+#include "Declaration.h"
+#include "Variable.h"
 
 namespace dscript {
 	

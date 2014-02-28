@@ -1,7 +1,14 @@
 #ifndef SCRIPT_TYPE_H
 #define SCRIPT_TYPE_H
 
+#include <vector>
+
+#include "ScriptObject.h"
+
 namespace dscript {
+	
+	class StructDeclaration;
+	class VarDeclaration;
 	
 	class Type {
 	public:

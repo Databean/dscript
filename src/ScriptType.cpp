@@ -1,5 +1,7 @@
-#include "Include.h"
+#include "ScriptType.h"
 #include "Debug.h"
+
+#include "Variable.h"
 
 namespace dscript {
 	Type::Type() {

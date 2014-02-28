@@ -1,7 +1,11 @@
 #ifndef SCRIPT_OBJECT_H
 #define SCRIPT_OBJECT_H
 
+#include <string>
+
 namespace dscript {
+	
+	class Type;
 	
 	template<typename Base>
 	class InheritanceHider {

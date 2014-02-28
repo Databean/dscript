@@ -1,6 +1,9 @@
 #ifndef DECLARATION_H
 #define DECLARATION_H
 
+#include "Statement.h"
+#include "ScriptObject.h"
+
 namespace dscript {
 	
 	class Declaration : public Statement {

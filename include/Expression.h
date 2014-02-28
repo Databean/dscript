@@ -1,7 +1,13 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include "Statement.h"
+#include "ScriptType.h"
+
 namespace dscript {
+	
+	class VarExpr;
+	class Reference;
 	
 	class Expression : public Statement {
 	public:

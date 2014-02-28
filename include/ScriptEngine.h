@@ -2,7 +2,17 @@
 #ifndef SCRIPT_ENGINE_H
 #define SCRIPT_ENGINE_H
 
+#include "Node.h"
+#include "Function.h"
+#include "Operators.h"
+
 namespace dscript {
+	
+	class Variable;
+	class BinaryOperatorFunc;
+	class UnaryOperatorFunc;
+	class Function;
+	class Statement;
 	
 	class ScriptEngine : public ScopedNode {
 	public:

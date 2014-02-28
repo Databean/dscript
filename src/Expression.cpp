@@ -1,5 +1,7 @@
-#include "Include.h"
+#include "Expression.h"
 #include "Debug.h"
+
+#include "Variable.h"
 
 namespace dscript {
 	Expression::Expression() {

@@ -1,5 +1,7 @@
-#include "Include.h"
+#include "Operators.h"
 #include "Debug.h"
+
+#include "ScriptEngine.h"
 
 namespace dscript {
 	BinarySetOperator::BinarySetOperator(VarExpr* set, Expression* equalTo) {

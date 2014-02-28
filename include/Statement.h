@@ -1,6 +1,9 @@
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
+#include "Node.h"
+#include "ScriptObject.h"
+
 namespace dscript {
 	
 	class Expression;

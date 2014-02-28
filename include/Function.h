@@ -1,8 +1,12 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
+#include "ScriptObject.h"
+#include "ScriptType.h"
+
 #include <utility>
 #include <functional>
+#include <memory>
 
 #define RUN_FIRST(name,code) \
 class AAA##name { \
@@ -23,6 +27,13 @@ auto type = FunctionPrototype( name, sc->getType()->getParamTypes()); \
 getDScriptEngine()->addFunction(type, std::move(sc));)
 
 namespace dscript {
+	
+	class Node;
+	class Declaration;
+	class Scope;
+	class Statement;
+	class Type;
+	class FunctionType;
 		
 	class Function {
 	public:

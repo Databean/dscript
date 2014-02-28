@@ -1,5 +1,12 @@
-#include "Include.h"
+#include "Node.h"
 #include "Debug.h"
+
+#include <map>
+
+#include "Variable.h"
+#include "Function.h"
+
+using std::map;
 
 namespace dscript {
 	

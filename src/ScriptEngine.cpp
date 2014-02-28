@@ -1,4 +1,4 @@
-#include "Debug.h"
+#include "ScriptEngine.h"
 #include "Include.h"
 
 namespace dscript {

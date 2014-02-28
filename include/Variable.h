@@ -1,7 +1,13 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
+#include "ScriptObject.h"
+
 namespace dscript {
+	
+	class Type;
+	class Reference;
+	
 	class Variable {
 	public:
 		Variable(std::string,Type*);

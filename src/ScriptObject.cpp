@@ -1,5 +1,7 @@
-#include "Include.h"
+#include "ScriptObject.h"
 #include "Debug.h"
+
+#include "ScriptType.h"
 
 namespace dscript {
 	ObjectBase::ObjectBase() { }

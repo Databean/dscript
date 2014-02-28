@@ -14,7 +14,6 @@ run(auto f = fn; \
 UnaryOperatorType(name, new CPPType<type>), std::unique_ptr<UnaryOperatorFunc>(new UnaryOperatorCPPFunc<decltype(f(type())),type>(f)));)
 
 #include "ScriptType.h"
-#include "ScriptEngine.h"
 #include "Expression.h"
 #include "ScriptObject.h"
 #include <string>

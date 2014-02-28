@@ -1,5 +1,7 @@
-#include "Include.h"
+#include "Variable.h"
 #include "Debug.h"
+
+#include "ScriptType.h"
 
 namespace dscript {
 	Variable::Variable(std::string name,Type* type) {
