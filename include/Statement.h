@@ -1,6 +1,8 @@
 #ifndef STATEMENT_H
 #define STATEMENT_H
 
+#include <memory>
+
 #include "Node.h"
 #include "ScriptObject.h"
 
@@ -23,7 +25,7 @@ namespace dscript {
 		virtual ScriptObject evaluate(Scope* scope);
 		virtual void setParent(Node* n);
 	private:
-		std::vector<Statement*>* statements;
+		std::vector<std::unique_ptr<Statement>> statements;
 	};
 	class WhileStatement : public Statement {
 	public:
@@ -32,8 +34,8 @@ namespace dscript {
 		virtual ScriptObject evaluate(Scope* scope);
 		virtual bool verify();
 	private:
-		Expression* condition;
-		Statement* loop;
+		std::unique_ptr<Expression> condition;
+		std::unique_ptr<Statement> loop;
 	};
 	class IfStatement : public Statement {
 	public:
@@ -42,9 +44,9 @@ namespace dscript {
 		virtual ScriptObject evaluate(Scope* scope);
 		virtual bool verify();
 	private:
-		Expression* condition;
-		Statement* then;
-		Statement* els;
+		std::unique_ptr<Expression> condition;
+		std::unique_ptr<Statement> then;
+		std::unique_ptr<Statement> els;
 	};
 	class ReturnStatement : public Statement {
 	public:
@@ -53,7 +55,7 @@ namespace dscript {
 		virtual ScriptObject evaluate(Scope* scope);
 		virtual bool verify();
 	private:
-		Expression* val;
+		std::unique_ptr<Expression> val;
 	};
 }
 

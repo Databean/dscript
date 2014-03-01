@@ -13,27 +13,24 @@ namespace dscript {
 	}
 	
 	StatementBlock::StatementBlock(std::vector<Statement*>* statements) {
-		this->statements = statements;
-		for(std::vector<Statement*>::iterator i = statements->begin(); i < statements->end(); i++) {
-			(*i)->setParent((ScopedNode*)this);
-		}
-	}
-	StatementBlock::StatementBlock(Statement* s) {
-		this->statements = new std::vector<Statement*>;
-		statements->push_back(s);
-		s->setParent((ScopedNode*)this);
-	}
-	StatementBlock::~StatementBlock() {
-		for(std::vector<Statement*>::iterator i = statements->begin(); i < statements->end(); i++) {
-			delete (*i);
+		for(auto& statement : *statements) {
+			statement->setParent((ScopedNode*)this);
+			this->statements.emplace_back(statement);
 		}
 		delete statements;
 	}
+	StatementBlock::StatementBlock(Statement* s) {
+		statements.emplace_back(s);
+		s->setParent((ScopedNode*)this);
+	}
+	StatementBlock::~StatementBlock() {
+		
+	}
 	ScriptObject StatementBlock::evaluate(Scope* scope) {
 		Scope* s = new Scope(scope);
-		for(std::vector<Statement*>::iterator i = statements->begin(); i < statements->end(); i++) {
-			ScriptObject so = (*i)->evaluate(s);
-			if(so && !dynamic_cast<Expression*>(*i)) { 
+		for(auto& statement : statements) {
+			ScriptObject so = statement->evaluate(s);
+			if(so && !dynamic_cast<Expression*>(statement.get())) { 
 				delete s;
 				return std::move(so); 
 			}
@@ -46,8 +43,8 @@ namespace dscript {
 			DEBUG("statement block lacks a parent");
 		}
 		bool ret = true;
-		for(std::vector<Statement*>::iterator i = statements->begin(); i < statements->end(); i++) {
-			ret = ret && (*i)->verify();
+		for(auto& statement : statements) {
+			ret = ret && statement->verify();
 		}
 		scope.clear();
 		return ret;
@@ -56,15 +53,12 @@ namespace dscript {
 		ScopedNode::setParent(n);
 	}
 	
-	WhileStatement::WhileStatement(Expression* condition,Statement* loop) {
-		this->condition = condition;
-		this->loop = loop;
+	WhileStatement::WhileStatement(Expression* condition,Statement* loop) : condition(condition), loop(loop) {
 		condition->setParent(this);
 		loop->setParent(this);
 	}
 	WhileStatement::~WhileStatement() {
-		if(condition) { delete condition; }
-		if(loop) { delete loop; }
+		
 	}
 	bool WhileStatement::verify() {
 		if(!condition->verify()) {
@@ -90,22 +84,15 @@ namespace dscript {
 		}
 		return ScriptObject();
 	}
-	IfStatement::IfStatement(Expression* condition,Statement* then,Statement* els) {
+	IfStatement::IfStatement(Expression* condition,Statement* then,Statement* els) : condition(condition), then(then), els(els) {
 		condition->setParent(this);
 		then->setParent(this);
 		if(els) {
 			els->setParent(this);
 		}
-		this->condition = condition;
-		this->then = then;
-		this->els = els;
 	}
 	IfStatement::~IfStatement() {
-		delete condition;
-		delete then;
-		if(els) {
-			delete els;
-		}
+		
 	}
 	bool IfStatement::verify() {
 		if(!(condition->verify())) {
@@ -138,12 +125,11 @@ namespace dscript {
 		}
 		return ScriptObject();
 	}
-	ReturnStatement::ReturnStatement(Expression* val) {
-		this->val = val;
+	ReturnStatement::ReturnStatement(Expression* val) : val(val) {
 		val->setParent(this);
 	}
 	ReturnStatement::~ReturnStatement() {
-		delete val;
+		
 	}
 	bool ReturnStatement::verify() {
 		if(!(val->verify())) {
