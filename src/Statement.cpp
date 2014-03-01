@@ -27,15 +27,13 @@ namespace dscript {
 		
 	}
 	ScriptObject StatementBlock::evaluate(Scope* scope) {
-		Scope* s = new Scope(scope);
+		Scope s(scope);
 		for(auto& statement : statements) {
-			ScriptObject so = statement->evaluate(s);
+			ScriptObject so = statement->evaluate(&s);
 			if(so && !dynamic_cast<Expression*>(statement.get())) { 
-				delete s;
 				return std::move(so); 
 			}
 		}
-		delete s;
 		return ScriptObject();
 	}
 	bool StatementBlock::verify() {

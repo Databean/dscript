@@ -54,7 +54,7 @@ namespace dscript {
 	private:
 		std::map<FunctionPrototype,Function*> functions;
 		std::vector<Statement*>* statements;
-		Scope* scope;
+		Scope scope;
 	};
 	
 	ScriptEngine* getDScriptEngine();

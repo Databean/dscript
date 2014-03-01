@@ -7,10 +7,9 @@
 #include "Declaration.h"
 
 namespace dscript {
-	ScriptEngine::ScriptEngine() {
+	ScriptEngine::ScriptEngine() : scope(nullptr) {
 		std::cout << "initializing script engine" << std::endl;
 		
-		scope = new Scope(NULL);
 		addPrintingLibrary(*this);
 	}
 	ScriptEngine::~ScriptEngine() {
@@ -51,16 +50,15 @@ namespace dscript {
 		functions[FunctionPrototype(name, f->getType()->getParamTypes())] = std::move(f);
 	}
 	
-	Program::Program(std::vector<Statement*>* statements) {
+	Program::Program(std::vector<Statement*>* statements) : scope(getDScriptEngine()->getScope()) {
 		this->statements = statements;
-		this->scope = getDScriptEngine()->getScope();
 		
 		for(size_t i=0;i<statements->size();i++) {
 			statements->at(i)->setParent(this);
 			FunctionDeclaration* fd = dynamic_cast<FunctionDeclaration*>(statements->at(i));
 			if(fd) {
 				functions[fd->getPrototype()]=fd->getFunction();
-				fd->getFunction()->setParentScope(scope);
+				fd->getFunction()->setParentScope(&scope);
 			}
 		}
 	}
@@ -79,7 +77,7 @@ namespace dscript {
 	}
 	void Program::evaluate() {
 		for(std::vector<Statement*>::iterator it = statements->begin(); it !=statements->end(); it++) {
-			(*it)->evaluate(scope);
+			(*it)->evaluate(&scope);
 		}
 	}
 	Function* Program::getFunction(FunctionPrototype fp) {

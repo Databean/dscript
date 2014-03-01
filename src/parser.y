@@ -94,9 +94,8 @@ Program			:	RootList								{
 															cout << ">>>verifying program" << std::endl;
 															if($$->verify()) {
 																std::cout << ">>>evaluating program" << std::endl;
-																Scope* s = new Scope(getDScriptEngine()->getScope());
+																Scope s(getDScriptEngine()->getScope());
 																$$->evaluate();
-																delete s;
 															}
 															delete $$;
 															}

@@ -32,21 +32,18 @@ namespace dscript {
 		parentscope = s;
 	}
 	ScriptObject ScriptFunction::call(std::vector<ScriptObject>& paramValues) {
-		Scope* scope = new Scope(parentscope);
+		Scope scope(parentscope);
 		
 		for(std::vector<Declaration*>::iterator it = parameters->begin(); it != parameters->end(); it++) {
-			(*it)->evaluate(scope);
+			(*it)->evaluate(&scope);
 		}
 		
 		for(size_t i=0;i<paramValues.size();i++) {
-			(scope->getVariable(parameters->at(i)->getName()))->setValue(std::move(paramValues[i]));
+			(scope.getVariable(parameters->at(i)->getName()))->setValue(std::move(paramValues[i]));
 		}
 		
-		Scope* s = new Scope(scope);
-		ScriptObject ret = run->evaluate(scope);
-		delete s;
-		delete scope;
-		return ret;
+		Scope s(&scope);
+		return run->evaluate(&s);
 	}/*
 	ScriptObject* ScriptFunction::clone() {
 		return new ScriptFunction(type,parameters,run,parentscope);
