@@ -2,8 +2,9 @@ CC := g++ -std=gnu++11 -g -O2
 export OBJ_HOME := $(realpath obj)
 export INCL_HOME := $(realpath include)
 EXECUTABLE := dscript
+ALLFILES := $(wildcard src/*) $(wildcard src/scriptlib/*) $(wildcard include/*)
 
-$(EXECUTABLE): 
+$(EXECUTABLE): $(ALLFILES)
 	cd src && $(MAKE)
 	$(CC) -Wall obj/*.o obj/scriptlib/*.o -o $(EXECUTABLE)
 
