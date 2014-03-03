@@ -1,11 +1,29 @@
 %{
 #include "y.tab.h"
+
 #include <iostream>
+int yylex(YYSTYPE* lvalp, YYLTYPE* lloc, void* scanner);
+void yyerror(YYLTYPE* loc, void* context, const char* err) {
+	std::cout << loc->first_line << ":" << loc->last_line << " >> " << err << std::endl;
+}
+#define scanner context->getScannerState()
 %}
+
+%pure-parser
+
+%lex-param {void * scanner}
+
+%parse-param {ScriptContext * context}
+
+%locations
+
+%define parse.lac full
+%define parse.error verbose
 
 %code requires {
 
-#include "scanner.h"
+#include "ScriptContext.h"
+
 #include <string>
 #include <vector>
 #include <iostream>
@@ -88,16 +106,12 @@ using namespace std;
 %%
 
 Program			:	RootList								{
-															cout << $1->size() << endl;
-															$$ = new Program($1);
-															$$->setParent(getDScriptEngine());
-															cout << ">>>verifying program" << std::endl;
-															if($$->verify()) {
-																std::cout << ">>>evaluating program" << std::endl;
-																Scope s(getDScriptEngine()->getScope());
-																$$->evaluate();
+															for(auto it : *$1) {
+																if(!it) {
+																	YYERROR;
+																}
 															}
-															delete $$;
+															context->program = std::unique_ptr<Program>(new Program($1));
 															}
 				;
 

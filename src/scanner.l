@@ -1,12 +1,37 @@
 %{
+#include "ScriptContext.h"
 #include "y.tab.h"
-#include "scanner.h"
 #include <string>
-YY_BUFFER_STATE bufferState;
+#include <iostream>
+
+#define YY_EXTRA_TYPE ScriptContext*
+#define YY_INPUT(buf,result,max_size)   \
+{                                       \
+	char c;                              \
+	c = yyextra->getInput().get();                 \
+	if(yyextra->getInput().eof())               \
+		result = YY_NULL;                 \
+	else {                               \
+		buf[0] = c;                       \
+		result = 1;                       \
+	}                                    \
+}
+
+#define YY_USER_ACTION { \
+	yylloc->first_line = yylloc->last_line;\
+	yylloc->first_column = yylloc->last_column;\
+	for(char* c = yytext; *c; c++) {\
+		if(*c == '\n') { yylloc->last_line++; yylloc->last_column = 0; }\
+		else { yylloc->last_column++; }\
+	} \
+}
+
 %}
 
 %option noyywrap
-%option yylineno
+%option reentrant
+%option bison-bridge bison-locations
+%option extra-type="ScriptContext*"
 
 WHITESPACE		[ \t\r\n]+
 INT				[0-9]+
@@ -21,9 +46,9 @@ C_COMMENT		((?:\/\*(?:[^*]|(?:\*+[^*\/]))*\*+\/)|(?:\/\/.*))
 {WHITESPACE}	{;}
 {LINE_COMMENT}	{;}
 {C_COMMENT}		{;}
-{REAL}			{yylval.realLiteral = float(atof(yytext)); return T_RealLiteral;}
-{INT}			{yylval.intLiteral = atoi(yytext); return T_IntLiteral;}
-{STRING}		{yylval.string = new string(yytext,1,strlen(yytext)-2); return T_StringLiteral;}
+{REAL}			{yylval->realLiteral = float(atof(yytext)); return T_RealLiteral;}
+{INT}			{yylval->intLiteral = atoi(yytext); return T_IntLiteral;}
+{STRING}		{yylval->string = new string(yytext,1,strlen(yytext)-2); return T_StringLiteral;}
 Int				{return T_IntType;}
 Real			{return T_RealType;}
 String			{return T_StringType;}
@@ -68,19 +93,11 @@ struct			{return T_Struct;}
 "++"			{return T_PlusPlus;}
 "--"			{return T_MinusMinus;}
 
-{IDENTIFIER}	{yylval.string = new string(yytext); return T_Identifier;}
+{IDENTIFIER}	{yylval->string = new string(yytext); return T_Identifier;}
 .				{return *yytext; }
 
 %%
 
 void yyerror(char* s) {
 	fprintf (stderr, "%s\n", s);
-}
-
-void chooseFile(const char* text) {
-	bufferState = yy_scan_string(text);
-}
-
-void cleanBufferState() {
-	yy_delete_buffer(bufferState);
 }

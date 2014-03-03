@@ -9,16 +9,16 @@ main:  y.tab.c lex.yy.c $(OBJECTS)
 	cd scriptlib && $(MAKE)
 	
 
-lex.yy.c: scanner.l
-	flex scanner.l
+$(INCL_HOME)/scanner.h lex.yy.c: scanner.l
+	flex  --header-file=../include/scanner.h scanner.l
 
-y.tab.c: parser.y
+y.tab.c y.tab.h: parser.y
 	bison -dvty parser.y
 
-$(OBJ_HOME)/%.o: %.cpp $(HEADERS)
+$(OBJ_HOME)/%.o: %.cpp $(HEADERS) $(INCL_HOME)/scanner.h y.tab.h
 	$(CC) $(CFLAGS) $< -o $@ $(INCLUDES)
 
-$(OBJ_HOME)/%.o: %.c $(HEADERS)
+$(OBJ_HOME)/%.o: %.c $(HEADERS) y.tab.h
 	$(CC) $(CFLAGS) $< -o $@ $(INCLUDES)
 
 .PHONY: clean

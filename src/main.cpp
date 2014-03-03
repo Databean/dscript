@@ -4,8 +4,7 @@
 #include <fstream>
 #include <iostream>
 
-int yyparse();
-int yylex();
+#include "ScriptContext.h"
 
 int main(int argc,char** args) {
 	std::string filename;
@@ -16,23 +15,21 @@ int main(int argc,char** args) {
 		filename = "test.ds";
 	}
 	
-	std::cout << ">>this is the file" << std::endl;
-	
 	std::fstream file(filename.c_str(), std::fstream::in);
-	std::stringbuf text;
-	file >> &text;
-	file.close();
-	
-	std::cout << text.str() << std::endl;
 	
 	std::cout << ">>running parser, lexer" << std::endl;
 	
-	chooseFile(text.str().c_str());
+	ScriptContext context(file);
 	
-	yyparse();
+	int success = yyparse(&context);
 	
-	cleanBufferState();
-	
-	
+	if(success == 0) {
+		context.program->setParent(getDScriptEngine());
+		if(context.program->verify()) {
+			context.program->evaluate();
+		}
+	} else {
+		std::cout << "error " << success << std::endl;
+	}
 	std::cout << ">>done" <<std::endl;
 }
