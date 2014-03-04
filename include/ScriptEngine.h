@@ -2,6 +2,8 @@
 #ifndef SCRIPT_ENGINE_H
 #define SCRIPT_ENGINE_H
 
+#include <memory>
+
 #include "Node.h"
 #include "Function.h"
 #include "Operators.h"
@@ -21,7 +23,7 @@ namespace dscript {
 		virtual bool verify();
 		virtual Scope* getScope();
 		
-		virtual void addVariable(Variable* v);
+		virtual void addVariable(std::unique_ptr<Variable> v);
 		virtual Variable* getVariable(std::string name);
 		
 		virtual void addBinaryOperator(BinaryOperatorType, std::unique_ptr<BinaryOperatorFunc>);

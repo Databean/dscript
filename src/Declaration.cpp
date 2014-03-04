@@ -39,33 +39,30 @@ namespace dscript {
 		if(initialValue) { delete initialValue; }
 	}
 	bool VarDeclaration::verify() {
-		Variable* me = new NamedVariable(name,type,type->defaultObject());
+		std::unique_ptr<Variable> me(new NamedVariable(name,type,type->defaultObject()));
 		if(initialValue) {
 			if(!(initialValue->verify())) {
 				std::cout << "variable initial value bad" << std::endl;
-				delete me;
 				return false;
 			}
 			if(!(initialValue->getType() == *(type))) {
 				std::cout << "initial value does not match type" << std::endl;
-				delete me;
 				return false;
 			}
 		}
 		if(varLocalExists(name)) {
 			std::cout << "variable " << name << " already declared in this scope" << std::endl;
-			delete me;
 			return false;
 		}
-		addVariable(me);
+		addVariable(std::move(me));
 		return true;
 	}
 	ScriptObject VarDeclaration::evaluate(Scope* scope) {
-		Variable* me = new NamedVariable(name,type,type->defaultObject());
-		scope->addVariable(me);
+		std::unique_ptr<Variable> me(new NamedVariable(name,type,type->defaultObject()));
 		if(initialValue) {
 			me->setValue(initialValue->evaluate(scope));
 		}
+		scope->addVariable(std::move(me));
 		return ScriptObject();
 	}
 	
@@ -137,13 +134,12 @@ namespace dscript {
 				std::cout << "variable " << name << " initial value is not a reference" << std::endl;
 			}
 		}
-		Variable* me = new ReferenceVariable(name,type,new DefaultReference(type));
+		std::unique_ptr<Variable> me(new ReferenceVariable(name,type,new DefaultReference(type)));
 		if(varLocalExists(name)) {
 			std::cout << "variable " << name << " already declared in this scope" << std::endl;
-			delete me;
 			return false;
 		}
-		addVariable(me);
+		addVariable(std::move(me));
 		return true;
 	}
 	ScriptObject ReferenceVarDeclaration::evaluate(Scope* scope) {
@@ -153,8 +149,8 @@ namespace dscript {
 		} else {
 			r = new DefaultReference(type);
 		}
-		Variable* me = new ReferenceVariable(name,type,r);
-		scope->addVariable(me);
+		std::unique_ptr<Variable> me(new ReferenceVariable(name,type,r));
+		scope->addVariable(std::move(me));
 		return ScriptObject();
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "Declaration.h"
 #include "Expression.h"
+#include "Variable.h"
 
 namespace dscript {
 	Statement::Statement() {

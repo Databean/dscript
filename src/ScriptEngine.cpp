@@ -5,6 +5,7 @@
 #include "ScriptLib.h"
 #include "Function.h"
 #include "Declaration.h"
+#include "Variable.h"
 
 namespace dscript {
 	ScriptEngine::ScriptEngine() : scope(nullptr) {
@@ -21,9 +22,8 @@ namespace dscript {
 	Variable* ScriptEngine::getVariable(std::string name) {
 		return scope->getVariable(name);
 	}
-	void ScriptEngine::addVariable(Variable* v) {
-		ScopedNode::addVariable(v);
-		scope->addVariable(v);
+	void ScriptEngine::addVariable(std::unique_ptr<Variable> v) {
+		ScopedNode::addVariable(std::move(v));
 	}
 	Scope* ScriptEngine::getScope() {
 		return scope;

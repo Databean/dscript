@@ -7,6 +7,7 @@
 #include "Function.h"
 
 using std::map;
+using std::unique_ptr;
 
 namespace dscript {
 	
@@ -14,9 +15,7 @@ namespace dscript {
 		this->parent = parent;
 	}
 	Scope::~Scope() {
-		for(std::map<std::string,Variable*>::iterator it=vars.begin();it!=vars.end();it++) {
-			delete it->second;
-		}
+		
 	}
 	Variable* Scope::getVariable(std::string name) {
 		if(vars.find(name)==vars.end()) {
@@ -26,11 +25,11 @@ namespace dscript {
 				return NULL;
 			}
 		} else {
-			return vars[name];
+			return vars[name].get();
 		}
 	}
-	void Scope::addVariable(Variable* v) {
-		vars[v->getName()]=v;
+	void Scope::addVariable(std::unique_ptr<Variable> v) {
+		vars[v->getName()] = std::move(v);
 	}
 	
 	Node::Node() {
@@ -57,8 +56,8 @@ namespace dscript {
 	Function* Node::getFunction(FunctionPrototype fp) {
 		return parent->getFunction(fp);
 	}
-	void Node::addVariable(Variable* v) {
-		parent->addVariable(v);
+	void Node::addVariable(std::unique_ptr<Variable> v) {
+		parent->addVariable(std::move(v));
 	}
 	
 	//------------------------//
@@ -66,9 +65,7 @@ namespace dscript {
 		
 	}
 	ScopedNode::~ScopedNode() {
-		for(std::map<std::string,Variable*>::iterator it = scope.begin(); it != scope.end(); it++) {
-			if((*it).second) { delete (*it).second; }
-		}
+		
 	}
 	bool ScopedNode::varLocalExists(std::string name) {
 		return scope.find(name)!=scope.end();
@@ -81,17 +78,14 @@ namespace dscript {
 	}
 	Variable* ScopedNode::getVariable(std::string name) {
 		if(parent) {
-			return varLocalExists(name) ? scope[name] : parent->getVariable(name);
+			return varLocalExists(name) ? scope[name].get() : parent->getVariable(name);
 		}
-		return varLocalExists(name) ? scope[name] : NULL;
+		return varLocalExists(name) ? scope[name].get() : NULL;
 	}
-	void ScopedNode::addVariable(Variable* v) {
-		scope[v->getName()]=v;
+	void ScopedNode::addVariable(std::unique_ptr<Variable> v) {
+		scope[v->getName()] = std::move(v);
 	}
 	void ScopedNode::clearScope() {
-		for(std::map<std::string,Variable*>::iterator it = scope.begin(); it != scope.end(); it++) {
-			if(it->second) { delete it->second; }
-		}
 		scope.clear();
 	}
 }

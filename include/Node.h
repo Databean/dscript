@@ -2,6 +2,7 @@
 #define NODE_H
 
 #include <map>
+#include <memory>
 
 #include "Function.h"
 
@@ -15,9 +16,9 @@ namespace dscript {
 		virtual ~Scope();
 		
 		virtual Variable* getVariable(std::string name);
-		virtual void addVariable(Variable* v);
+		virtual void addVariable(std::unique_ptr<Variable> v);
 	private:
-		std::map<std::string,Variable*> vars;
+		std::map<std::string,std::unique_ptr<Variable>> vars;
 		Scope* parent;
 	};
 	
@@ -34,7 +35,7 @@ namespace dscript {
 		virtual bool varExists(std::string name);
 		virtual bool varLocalExists(std::string name);
 		virtual Variable* getVariable(std::string name);
-		virtual void addVariable(Variable* v);
+		virtual void addVariable(std::unique_ptr<Variable> v);
 		virtual Function* getFunction(FunctionPrototype);
 		//virtual Node* clone();
 	protected:
@@ -52,10 +53,10 @@ namespace dscript {
 		virtual bool varLocalExists(std::string name);
 		virtual bool varExists(std::string name);
 		virtual Variable* getVariable(std::string name);
-		virtual void addVariable(Variable* v);
+		virtual void addVariable(std::unique_ptr<Variable> v);
 		virtual void clearScope();
 	protected:
-		std::map<std::string,Variable*> scope;
+		std::map<std::string, std::unique_ptr<Variable>> scope;
 	};
 	
 
